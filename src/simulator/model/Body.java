@@ -62,12 +62,21 @@ public class Body {
         state.put("id", _id);
         state.put("m", _mass);
         state.put("p", _v_pos);
-        state.put("p", _v_vel);
+        state.put("v", _v_vel);
         state.put("f", _v_force);
         return state;
     }
 
     public String toString() {
         return getState().toString();
+        // Output example of this method:
+        // {"p":"[3.5,5.0]","v":"[4.0,7.0]","f":"[5.0,6.0]","id":"1","m":3.45}
+
+        // I THINK WE NEED THIS SECOND METHOD!!!
+        String toStr;
+        toStr = " {" +  " \"id\": \"" + _id + "\", \"m\": "  + _mass + ", \"p\": " + _v_pos +  ", \"v\": " + _v_vel + ", \"f\": " + _v_force + " }" ;
+        return toStr;
+        // Output example of this method:
+        //  { "id": "1", "m": 3.45, "p": [3.5,5.0], "v": [4.0,7.0], "f": [5.0,6.0] }
     }
 }
