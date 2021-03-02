@@ -5,11 +5,11 @@ import org.json.JSONObject;
 import simulator.misc.Vector2D;
 
 public class Body {
-    private static String _id;
-    private static Vector2D _v_vel;
-    private static Vector2D _v_force;
-    private static Vector2D _v_pos;
-    private static double _mass;
+    protected String _id;
+    protected Vector2D _v_vel;
+    protected Vector2D _v_force;
+    protected Vector2D _v_pos;
+    protected double _mass;
 
     public Body (String id, Vector2D v_vel, Vector2D v_force, Vector2D v_pos, double mass) {
         _id = id;
@@ -50,11 +50,11 @@ public class Body {
 
     void move(double t) {
         // 1. Compute acceleration
-        Vector2D v_acc = _v_force.scale(1/_mass);
+        Vector2D v_acc = _v_force.scale(1/_mass);   // a = f / m
         // 2. Change position
-        _v_pos = _v_pos.plus(_v_vel.scale(t)).plus(v_acc.scale(0.5 * t * t));
+        _v_pos = _v_pos.plus(_v_vel.scale(t)).plus(v_acc.scale(0.5 * t * t));   // p = p0 + v*t + (1/2)*a*(t^2)
         // 3. Change velocity
-        _v_vel = _v_vel.plus(v_acc.scale(t));
+        _v_vel = _v_vel.plus(v_acc.scale(t));   // v = v0 + a*t
     }
 
     public JSONObject getState() {
