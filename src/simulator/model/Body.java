@@ -68,7 +68,7 @@ public class Body {
     }
 
     public String toString() {
-        return getState().toString();
+        //return getState().toString();
         // Output example of this method:
         // {"p":"[3.5,5.0]","v":"[4.0,7.0]","f":"[5.0,6.0]","id":"1","m":3.45}
 
@@ -78,5 +78,9 @@ public class Body {
         return toStr;
         // Output example of this method:
         //  { "id": "1", "m": 3.45, "p": [3.5,5.0], "v": [4.0,7.0], "f": [5.0,6.0] }
+    }
+
+    public boolean equals(Body b){
+        return b.getId().equals(this._id); 
     }
 }
