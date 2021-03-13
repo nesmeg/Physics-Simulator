@@ -19,9 +19,11 @@ public abstract class Builder<T> {
 
     }
 
-    public createData() {
+    public JSONObject createData() {
 
     }
 
-    public createTheInstance
+    public createTheInstance(JSONObject object) {
+
+    }
 }
