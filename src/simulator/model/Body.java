@@ -74,7 +74,7 @@ public class Body {
 
         // I THINK WE NEED THIS SECOND METHOD!!!
         String toStr;
-        toStr = " {" +  " \"id\": \"" + _id + "\", \"m\": "  + _mass + ", \"p\": " + _v_pos +  ", \"v\": " + _v_vel + ", \"f\": " + _v_force + " }" ;
+        toStr = " {" +  " \"id\": \"" + _id + "\", \"m\": "  + _mass + ", \"p\": " + _v_pos +  ", \"v\": " + _v_vel + ", \"f\": " + _v_force + " } " ;
         return toStr;
         // Output example of this method:
         //  { "id": "1", "m": 3.45, "p": [3.5,5.0], "v": [4.0,7.0], "f": [5.0,6.0] }

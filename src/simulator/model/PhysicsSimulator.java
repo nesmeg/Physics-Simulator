@@ -1,7 +1,9 @@
 package simulator.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 public class PhysicsSimulator {
     private double _dt;
@@ -20,7 +22,7 @@ public class PhysicsSimulator {
             _dt = deltaTime;
             _current_time = 0;
             _forceLaws = forceLaws;
-            _bodies = new List<Bodies>();
+            _bodies = new ArrayList<Body>();
         }
 
     }
@@ -50,6 +52,26 @@ public class PhysicsSimulator {
     }
 
     public JSONObject getState() {
+        JSONObject state = new JSONObject();
+        JSONArray jsonBodies = new JSONArray();
         
+        state.put("time", _current_time);
+        for (Body body : _bodies) {
+            jsonBodies.put(body.getState());
+        }
+        state.put("bodies", jsonBodies);
+        return state;
+    }
+
+    public String toString() {
+        String bodiesStr = "";
+
+        for (Body body : _bodies) {
+            bodiesStr += body.toString();
+        }
+        
+        String toStr;
+        toStr = " {" +  " \"time\": \"" + _current_time + "\", \"bodies\": ["  + bodiesStr + "] }";
+        return toStr;
     }
 }
