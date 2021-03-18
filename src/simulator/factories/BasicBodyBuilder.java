@@ -6,16 +6,16 @@ import simulator.model.Body;
 
 public class BasicBodyBuilder extends Builder<Body>{
     
-    public BasicBodyBuilder() {
-        _type = "basic";
-		_desc = "Basic body";
-    }
+  public BasicBodyBuilder() {
+    _type = "basic";
+    _desc = "Basic body";
+  }
 
-    protected Body createTheInstance(JSONObject object) {
+  protected Body createTheInstance(JSONObject object) {
 
-    }
+  }
 
-    protected JSONObject createData() {
+  protected JSONObject createData() {
 		JSONObject data = new JSONObject();
 		// FILL THE OBJECT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		return data;

@@ -6,16 +6,16 @@ import simulator.model.Body;
 
 public class MassLosingBodyBuilder extends Builder<Body> {
     
-    public MassLosingBodyBuilder() {
-        _type = "mlb";
-		_desc = "Mass losing body";
-    }
+  public MassLosingBodyBuilder() {
+    _type = "mlb";
+    _desc = "Mass losing body";
+  }
 
-    protected Body createTheInstance(JSONObject object) {
+  protected Body createTheInstance(JSONObject object) {
 
-    }
+  }
 
-    protected JSONObject createData() {
+  protected JSONObject createData() {
 		JSONObject data = new JSONObject();
 		// FILL THE OBJECT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		return data;
