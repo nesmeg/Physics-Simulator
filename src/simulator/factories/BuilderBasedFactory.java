@@ -14,8 +14,8 @@ public class BuilderBasedFactory<T> implements Factory<T> {
         _builders = new ArrayList<>(builders);
 
         List<JSONObject> info = new ArrayList<>();
-        for (Builder<T> b : builders) {
-            info.add(b.getBuilderInfo());
+        for (Builder<T> builder : builders) {
+            info.add(builder.getBuilderInfo());
         }
         _factoryElements = Collections.unmodifiableList(info);
     }
@@ -26,10 +26,10 @@ public class BuilderBasedFactory<T> implements Factory<T> {
             throw new IllegalArgumentException("Invalid value for createInstance: null");
         }
 
-        for (Builder<T> bb : _builders) {
-            T o = bb.createInstance(info);
+        for (Builder<T> builder : _builders) {
+            T o = builder.createInstance(info);
             if (o != null)
-                return o;
+                return o; // if we find a correct builder, we return and never arrive to the exception
         }
 
         throw new IllegalArgumentException("Invalid value for createInstance: " + info.toString());

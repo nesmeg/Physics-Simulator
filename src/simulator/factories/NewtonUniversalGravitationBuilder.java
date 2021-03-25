@@ -17,8 +17,10 @@ public class NewtonUniversalGravitationBuilder extends Builder<ForceLaws> {
 	}
 
     protected JSONObject createData() {
+		/*
 		JSONObject data = new JSONObject();
 		// FILL THE OBJECT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		return data;
+		*/
 	}
 }

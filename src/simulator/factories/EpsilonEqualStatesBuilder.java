@@ -17,8 +17,10 @@ public class EpsilonEqualStatesBuilder extends Builder<StateComparator> {
 	}
 
     protected JSONObject createData() {
+		/*
 		JSONObject data = new JSONObject();
-		// FILL THE OBJECT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		data.put("eps", "epsilon");
 		return data;
+		*/
 	}
 }
