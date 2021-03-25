@@ -14,7 +14,7 @@ public class MassEqualStates implements StateComparator {
 
         String id1, id2;
         double m1, m2;
-        
+        // TODO: IMPLEMENTAR LAS FUNCIONES DE EPSILONEQUALSTATES PARA NUMEROS E IDS PARA QUE QUEDE MAS LIMPIO
         //ArrayList body1 = new ArrayList<Body>(s1.get("bodies"));
         if (s1.get("time") == s2.get("time")) {
             
