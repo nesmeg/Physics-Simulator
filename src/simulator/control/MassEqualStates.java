@@ -2,38 +2,38 @@ package simulator.control;
 
 import org.json.JSONObject;
 
-import simulator.model.Body;
-
 import org.json.JSONArray;
-import org.json.JSONArray;
-import java.util.ArrayList;
 
 public class MassEqualStates implements StateComparator {
     
-    public MassEqualStates() {
-
-    }
+    public MassEqualStates() {}
 
     public boolean equal(JSONObject s1, JSONObject s2) {
-        boolean equals;
-        JSONArray bodies1 = new JSONArray(s1.get("bodies"));
-        JSONArray bodies2 = new JSONArray(s2.get("bodies"));
+        JSONArray bodies1 = s1.getJSONArray("bodies");
+        JSONArray bodies2 = s2.getJSONArray("bodies");
+
+        String id1, id2;
+        double m1, m2;
         
-        ArrayList body1 = new ArrayList<Body>(s1.get("bodies"));
+        //ArrayList body1 = new ArrayList<Body>(s1.get("bodies"));
         if (s1.get("time") == s2.get("time")) {
-            for (int i = 0; i < array.length; i++) {
-                
-            }
-            for (JSONArray array : bodies1) {
-                
-            }
-            if (bodies1.equals(bodies2)) {
-                equals = true;
+            
+            for (int i = 0; i < bodies1.length(); i++) { // traverse the JSON list
+                id1 = bodies1.getJSONObject(i).getJSONObject("data").getString("id");
+                id2 = bodies2.getJSONObject(i).getJSONObject("data").getString("id");
+                m1 = bodies1.getJSONObject(i).getJSONObject("data").getDouble("m");
+                m2 = bodies2.getJSONObject(i).getJSONObject("data").getDouble("m");
+                if (!((id1.equals(id2)) && (m1 == m2))) {
+                    return false;
+                }
             }
         }
         else
-            equals = false;
+            return false;
             
-        return equals;
+        // if none of the two conditions for it to be false are met, then it is true
+        return true;
     }
 }
+
+
