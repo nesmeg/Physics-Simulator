@@ -47,6 +47,7 @@ public class Main {
 	
 	private static String _outFile = null;
 	private static String _expFile = null;
+	private static Integer _steps = null;
 
 	// factories
 	private static Factory<Body> _bodyFactory;
@@ -192,6 +193,24 @@ public class Main {
 		}
 	}
 
+	private static void parseOutFile(CommandLine line) {
+		_outFile = line.getOptionValue("o");
+	}
+	
+	private static void parseExpectedOutput(CommandLine line) {
+		_expFile = line.getOptionValue("eo");
+	}
+	
+	private static void parseSteps(CommandLine line) throws ParseException{
+		String s = line.getOptionValue("s", _stepsDefaultValue.toString());
+		try {
+			_steps = Integer.parseInt("s");
+			assert (_steps > 0);
+		} catch (Exception e) {
+			throw new ParseException("Invalid steps value: " + s);
+		}
+	}
+
 	private static void parseDeltaTimeOption(CommandLine line) throws ParseException {
 		String dt = line.getOptionValue("dt", _dtimeDefaultValue.toString());
 		try {
@@ -278,7 +297,7 @@ public class Main {
 		controller.loadBodies(input);
 	
 		// Starts the simulator
-		controller.run(steps, output, expectedOutput, stateComparator);
+		controller.run(_steps, output, expectedOutput, stateComparator);
 	}
 
 	private static void start(String[] args) throws Exception {
