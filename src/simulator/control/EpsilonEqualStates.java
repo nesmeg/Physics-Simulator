@@ -25,8 +25,6 @@ public class EpsilonEqualStates implements StateComparator {
         JSONArray f1, f2;
         double m1, m2;
         
-        //ArrayList body1 = new ArrayList<Body>(s1.get("bodies"));
-        // TODO: METER AQUI LAS FUNCIONES HECHAS ABAJO
         if (s1.get("time") == s2.get("time")) {
             
             for (int i = 0; i < bodies1.length(); i++) { // traverse the JSON list
@@ -34,12 +32,23 @@ public class EpsilonEqualStates implements StateComparator {
                 id2 = bodies2.getJSONObject(i).getJSONObject("data").getString("id");
                 m1 = bodies1.getJSONObject(i).getJSONObject("data").getDouble("m");
                 m2 = bodies2.getJSONObject(i).getJSONObject("data").getDouble("m");
-                if (!((id1.equals(id2)) && (m1 == m2))) {
+                p1 = bodies1.getJSONObject(i).getJSONObject("data").getJSONArray("p");
+                p2 = bodies2.getJSONObject(i).getJSONObject("data").getJSONArray("p");
+                v1 = bodies1.getJSONObject(i).getJSONObject("data").getJSONArray("v");
+                v2 = bodies2.getJSONObject(i).getJSONObject("data").getJSONArray("v");
+                f1 = bodies1.getJSONObject(i).getJSONObject("data").getJSONArray("f");
+                f2 = bodies2.getJSONObject(i).getJSONObject("data").getJSONArray("f");
+
+                // check equality of: id, mass, position, velocity and force
+                if (!((epsEqualId(id1, id2)) && epsEqualNumbers(m1, m2)
+                        && epsEqualVectors(p1.getDouble(0), p1.getDouble(1), p2.getDouble(0), p2.getDouble(1))
+                        && epsEqualVectors(v1.getDouble(0), v1.getDouble(1), v2.getDouble(0), v2.getDouble(1))
+                        && epsEqualVectors(f1.getDouble(0), f1.getDouble(1), f2.getDouble(0), f2.getDouble(1)))) {
                     return false;
                 }
             }
         }
-        else
+        else // if key "time" is not equal, return false
             return false;
             
         // if none of the two conditions for it to be false are met, then it is true
@@ -53,7 +62,7 @@ public class EpsilonEqualStates implements StateComparator {
         return (v1.distanceTo(v2) <= _eps);
     }
 
-    public boolean epsEqualNumbers(int num1, int num2) {
+    public boolean epsEqualNumbers(double num1, double num2) {
         return (Math.abs(num1-num2) <= _eps);
     }
 
