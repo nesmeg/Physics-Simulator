@@ -20,13 +20,11 @@ public class BasicBodyBuilder extends Builder<Body>{
     if (!data.isEmpty()) { // if we have some data
       // get all the data needed to create a body:
       String id = data.getString("id");
-      // IMPORTANTE: no se si las siguientes declaraciones de vector2D estan bien, pero no se queja
+      Vector2D v_pos = new Vector2D(data.getJSONArray("p").getDouble(0), data.getJSONArray("p").getDouble(1));
       Vector2D v_vel = new Vector2D(data.getJSONArray("v").getDouble(0), data.getJSONArray("v").getDouble(1)); 
-      Vector2D v_force = new Vector2D(data.getJSONArray("v").getDouble(0), data.getJSONArray("v").getDouble(1));
-      Vector2D v_pos = new Vector2D(data.getJSONArray("v").getDouble(0), data.getJSONArray("v").getDouble(1));
-      double mass = data.getDouble("mass");
+      double mass = data.getDouble("m");
 
-      b = new Body(id, v_vel, v_force, v_pos, mass);
+      b = new Body(id, v_vel, v_pos, mass);
     }
 
     return b;

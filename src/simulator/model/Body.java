@@ -11,10 +11,10 @@ public class Body {
     protected Vector2D _v_pos;
     protected double _mass;
 
-    public Body (String id, Vector2D v_vel, Vector2D v_force, Vector2D v_pos, double mass) {
+    public Body (String id, Vector2D v_vel, Vector2D v_pos, double mass) {
         _id = id;
         _v_vel = v_vel;
-        _v_force = v_force;
+        _v_force = new Vector2D(); // the empty constructor returns the zero vector
         _v_pos = v_pos;
         _mass = mass;
     }

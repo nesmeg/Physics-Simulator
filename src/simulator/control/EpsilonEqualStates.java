@@ -14,7 +14,6 @@ public class EpsilonEqualStates implements StateComparator {
         _eps = eps;
     }
 
-    // SHOULD WE IMPLEMENT 3 DIFFERENT FUNCTIONS, ONE FOR EACH TYPE OF PARAMETERS????????????????????????????
     public boolean equal(JSONObject s1, JSONObject s2) {
         JSONArray bodies1 = s1.getJSONArray("bodies");
         JSONArray bodies2 = s2.getJSONArray("bodies");

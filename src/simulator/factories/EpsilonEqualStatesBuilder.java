@@ -12,15 +12,23 @@ public class EpsilonEqualStatesBuilder extends Builder<StateComparator> {
 		_desc = "Epsilon equal state";
     }
 
-    public StateComparator createTheInstance(JSONObject object) {
-		return new EpsilonEqualStates();
+    protected StateComparator createTheInstance(JSONObject object) {
+		EpsilonEqualStates epseq = null;
+		JSONObject data = new JSONObject();
+		data = object.getJSONObject("data"); // data of the object in the variable data
+
+		if (!data.isEmpty()) {
+			double eps = data.getDouble("eps");
+
+			epseq = new EpsilonEqualStates(eps);
+		}
+
+		return epseq;
 	}
 
     protected JSONObject createData() {
-		/*
 		JSONObject data = new JSONObject();
 		data.put("eps", "epsilon");
 		return data;
-		*/
 	}
 }

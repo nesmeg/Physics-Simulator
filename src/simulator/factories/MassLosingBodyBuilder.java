@@ -21,22 +21,19 @@ public class MassLosingBodyBuilder extends Builder<Body> {
     if (!data.isEmpty()) { // if we have some data
       // get all the data needed to create a body:
       String id = data.getString("id");
-      // IMPORTANTE: no se si las siguientes declaraciones de vector2D estan bien, pero no se queja
-      Vector2D v_vel = new Vector2D(data.getJSONArray("v").getDouble(0), data.getJSONArray("v").getDouble(1)); 
-      Vector2D v_force = new Vector2D(data.getJSONArray("v").getDouble(0), data.getJSONArray("v").getDouble(1));
-      Vector2D v_pos = new Vector2D(data.getJSONArray("v").getDouble(0), data.getJSONArray("v").getDouble(1));
-      double mass = data.getDouble("mass");
-      double lossFactor = data.getDouble("lossFactor");
-      double lossFrequency = data.getDouble("lossFrequency");
+      Vector2D v_pos = new Vector2D(data.getJSONArray("p").getDouble(0), data.getJSONArray("p").getDouble(1));
+      Vector2D v_vel = new Vector2D(data.getJSONArray("v").getDouble(0), data.getJSONArray("v").getDouble(1));
+      double mass = data.getDouble("m");
+      double lossFrequency = data.getDouble("freq");
+      double lossFactor = data.getDouble("factor");
 
-      mlb = new MassLosingBody(id, v_vel, v_force, v_pos, mass, lossFactor, lossFrequency);
+      mlb = new MassLosingBody(id, v_vel, v_pos, mass, lossFactor, lossFrequency);
     }
 
     return mlb;
   }
 
   protected JSONObject createData() {
-    /*
 		JSONObject data = new JSONObject();
     data.put("id", "body id");
     data.put("vel", "body velocity");
@@ -46,6 +43,5 @@ public class MassLosingBodyBuilder extends Builder<Body> {
     data.put("factor", "mass loss factor");
     data.put("freq", "mass loss frequency");
 		return data;
-    */
 	}
 }

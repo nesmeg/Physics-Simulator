@@ -2,6 +2,7 @@ package simulator.factories;
 
 import org.json.JSONObject;
 
+import simulator.misc.Vector2D;
 import simulator.model.ForceLaws;
 import simulator.model.MovingTowardsFixedPoint;
 
@@ -12,8 +13,19 @@ public class MovingTowardsFixedPointBuilder extends Builder<ForceLaws> {
 		_desc = "Moving towards fixed point";
     }
 
-    public ForceLaws createTheInstance(JSONObject object) {
-		return new MovingTowardsFixedPoint(); // missing to pass c and g as parameters
+    protected ForceLaws createTheInstance(JSONObject object) {
+		MovingTowardsFixedPoint mtfp = null;
+		JSONObject data = new JSONObject();
+		data = object.getJSONObject("data"); // data of the object in the variable data
+
+		if (!data.isEmpty()) {
+			Vector2D v_c = new Vector2D(data.getJSONArray("c").getDouble(0), data.getJSONArray("c").getDouble(1));
+			double g = data.getDouble("g");
+
+			mtfp = new MovingTowardsFixedPoint(v_c, g);
+		}
+
+		return mtfp;
 	}
     
     protected JSONObject createData() {
