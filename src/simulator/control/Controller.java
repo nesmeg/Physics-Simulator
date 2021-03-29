@@ -54,19 +54,24 @@ public class Controller {
         JSONObject currState = null;
         JSONObject expState = null;
 
-        for (int i = 0; i <= steps; i++) {
-            currState = _sim.getState();
-            p.println(currState);
-            if (i != steps)
-                p.print(",");                
-            if (expOutJO != null) {
-                expState = expOutJO.getJSONArray("states").getJSONObject(i);
-                if (!cmp.equal(expState, currState)) {
-                    throw new DifferentStatesException(expState, currState, i);
+        try {
+            for (int i = 0; i <= steps; i++) {
+                currState = _sim.getState();
+                p.println(currState);
+                if (i != steps)
+                    p.print(",");                
+                if (expOutJO != null) {
+                    expState = expOutJO.getJSONArray("states").getJSONObject(i);
+                    if (!cmp.equal(expState, currState)) {
+                        throw new DifferentStatesException(expState, currState, i);
+                    }
                 }
-            }
-            _sim.advance();
+                _sim.advance();
+            }            
+        } catch (DifferentStatesException e) {
+            //TODO: handle exception
         }
+
 
         // currState = _sim.getState();
         // p.println(currState);

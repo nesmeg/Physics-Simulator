@@ -128,8 +128,9 @@ public class Main {
 		// output
 		cmdLineOptions.addOption(Option.builder("o").longOpt("output").hasArg().desc("description").build());
 		cmdLineOptions.addOption(Option.builder("o").longOpt("output").hasArg()
-				.desc("Output file, where output is written. Default value: the standard output." + _outputDefaultValue + ".").build());
+				.desc("Output file, where output is written. Default value: the standard output." /*+ _outputDefaultValue + "."*/).build());
 				// TODO: PREGUNTAR AL PROFE EL DEFAULT VALUE DEL OUTPUT (STANDARD OUTPUT)
+				//Creo que el default output es simplemente imprimirlo a la consola, el system.out.println... de toda la vida
 		// expected output
 		cmdLineOptions.addOption(Option.builder("eo").longOpt("expected-output").hasArg().desc("The expected output file. If not provided no comparison is applied").build());
 
@@ -204,7 +205,8 @@ public class Main {
 	private static void parseSteps(CommandLine line) throws ParseException{
 		String s = line.getOptionValue("s", _stepsDefaultValue.toString());
 		try {
-			_steps = Integer.parseInt("s");
+			//_steps = Integer.parseInt("s");
+			_steps = Integer.parseInt(s);
 			assert (_steps > 0);
 		} catch (Exception e) {
 			throw new ParseException("Invalid steps value: " + s);
