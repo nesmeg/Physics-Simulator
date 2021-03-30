@@ -126,7 +126,6 @@ public class Main {
 		// cmdLineOptions)
 
 		// output
-		cmdLineOptions.addOption(Option.builder("o").longOpt("output").hasArg().desc("description").build());
 		cmdLineOptions.addOption(Option.builder("o").longOpt("output").hasArg()
 				.desc("Output file, where output is written. Default value: the standard output." /*+ _outputDefaultValue + "."*/).build());
 				// TODO: PREGUNTAR AL PROFE EL DEFAULT VALUE DEL OUTPUT (STANDARD OUTPUT)
