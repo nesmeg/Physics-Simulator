@@ -13,10 +13,8 @@ public class MovingTowardsFixedPointBuilder extends Builder<ForceLaws> {
 		_desc = "Moving towards fixed point";
     }
 
-    protected ForceLaws createTheInstance(JSONObject object) {
+    protected ForceLaws createTheInstance(JSONObject data) {
 		MovingTowardsFixedPoint mtfp = null;
-		JSONObject data = new JSONObject();
-		data = object.getJSONObject("data"); // data of the object in the variable data
 
 		if (!data.isEmpty()) {
 			Vector2D v_c = new Vector2D(data.getJSONArray("c").getDouble(0), data.getJSONArray("c").getDouble(1));
@@ -30,7 +28,8 @@ public class MovingTowardsFixedPointBuilder extends Builder<ForceLaws> {
     
     protected JSONObject createData() {
 		JSONObject data = new JSONObject();
-		// FILL THE OBJECT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		data.put("c", " ");
+		data.put("g", "gravitational force");
 		return data;
 	}
 }

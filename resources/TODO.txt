@@ -1,0 +1,4 @@
+- Hacer la excepcion DifferentStatesException
+- Hacer el catch de la excepcion en Controller.java (linea 73)
+- Revisar si nos sobra algo de Controller.java (linea 38)
+- Averiguar de donde mierdas salen los datos de los cuerpos

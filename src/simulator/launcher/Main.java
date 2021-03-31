@@ -261,7 +261,7 @@ public class Main {
 	}
 
 	private static void parseForceLawsOption(CommandLine line) throws ParseException {
-		String fl = line.getOptionValue("gl", _forceLawsDefaultValue);
+		String fl = line.getOptionValue("fl", _forceLawsDefaultValue);
 		_forceLawsInfo = parseWRTFactory(fl, _forceLawsFactory);
 		if (_forceLawsInfo == null) {
 			throw new ParseException("Invalid force laws: " + fl);
@@ -283,13 +283,21 @@ public class Main {
 		PhysicsSimulator simulator = new PhysicsSimulator(_dtime, forceLaws);
 		
 		// Create corresponding input/outout
-		FileInputStream input = new FileInputStream(_inFile);
-		FileOutputStream output = new FileOutputStream(_outFile);
-		FileInputStream expectedOutput = new FileInputStream(_expFile);
+		FileInputStream input = new FileInputStream(_inFile); // an input file is always going to be required so we dont need a condition
 
+		FileOutputStream output = null;
+		if (_outFile != null) {
+			output = new FileOutputStream(_outFile);
+		}
+		
+		FileInputStream expectedOutput = null;
+		StateComparator stateComparator = null;
+		if (_expFile != null) {
+			expectedOutput = new FileInputStream(_expFile);
 
-		// Creates state comparator
-		StateComparator stateComparator = _stateComparatorFactory.createInstance(_stateComparatorInfo);
+			// Creates state comparator (only needed if we have a not null _expFile)
+			stateComparator = _stateComparatorFactory.createInstance(_stateComparatorInfo);
+		}
 
 		// Creates a Controller
 		Controller controller = new Controller(simulator, _forceLawsFactory, _bodyFactory);

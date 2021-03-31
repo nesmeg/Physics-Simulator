@@ -3,9 +3,10 @@ package simulator.control;
 import org.json.JSONObject;
 
 public class DifferentStatesException extends Exception {
-    private String message = "";
 
     public DifferentStatesException(JSONObject expState, JSONObject currState, int step) {
-        super();
+        super("Expected state: " + expState.toString() + "\n"
+                + "Current state: " + expState.toString() + "\n"
+                + "Execution step number: " + Integer.toString(step));
     }
 }

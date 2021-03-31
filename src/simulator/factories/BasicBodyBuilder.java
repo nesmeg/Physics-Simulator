@@ -12,10 +12,8 @@ public class BasicBodyBuilder extends Builder<Body>{
     _desc = "Basic body";
   }
 
-  protected Body createTheInstance(JSONObject object) {
+  protected Body createTheInstance(JSONObject data) {
     Body b = null;
-    JSONObject data = new JSONObject();
-    data = object.getJSONObject("data"); // data of the object in the variable data
 
     if (!data.isEmpty()) { // if we have some data
       // get all the data needed to create a body:

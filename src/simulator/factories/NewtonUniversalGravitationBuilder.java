@@ -12,10 +12,8 @@ public class NewtonUniversalGravitationBuilder extends Builder<ForceLaws> {
 		_desc = "Newton's law of universal gravitation";
 	}
 
-    protected ForceLaws createTheInstance(JSONObject object) {
+    protected ForceLaws createTheInstance(JSONObject data) {
 		NewtonUniversalGravitation newton = null;
-		JSONObject data = new JSONObject();
-		data = object.getJSONObject("data"); // data of the object in the variable data
 
 		if (!data.isEmpty()) {
 			double g = data.getDouble("G");
@@ -28,7 +26,7 @@ public class NewtonUniversalGravitationBuilder extends Builder<ForceLaws> {
 
     protected JSONObject createData() {
 		JSONObject data = new JSONObject();
-		// FILL THE OBJECT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		data.put("G", "Gravitational constant");
 		return data;
 	}
 }

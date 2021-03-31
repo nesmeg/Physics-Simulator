@@ -13,10 +13,8 @@ public class MassLosingBodyBuilder extends Builder<Body> {
     _desc = "Mass losing body";
   }
 
-  protected Body createTheInstance(JSONObject object) {
+  protected Body createTheInstance(JSONObject data) {
     MassLosingBody mlb = null;
-    JSONObject data = new JSONObject();
-    data = object.getJSONObject("data"); // data of the object in the variable data
 
     if (!data.isEmpty()) { // if we have some data
       // get all the data needed to create a body:
