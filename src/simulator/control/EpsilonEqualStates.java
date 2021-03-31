@@ -15,6 +15,7 @@ public class EpsilonEqualStates implements StateComparator {
     }
 
     public boolean equal(JSONObject s1, JSONObject s2) {
+
         JSONArray bodies1 = s1.getJSONArray("bodies");
         JSONArray bodies2 = s2.getJSONArray("bodies");
 
@@ -24,19 +25,19 @@ public class EpsilonEqualStates implements StateComparator {
         JSONArray f1, f2;
         double m1, m2;
         
-        if (s1.get("time") == s2.get("time")) {
+        if (s1.getDouble("time") == s2.getDouble("time")) {
             
             for (int i = 0; i < bodies1.length(); i++) { // traverse the JSON list
-                id1 = bodies1.getJSONObject(i).getJSONObject("data").getString("id");
-                id2 = bodies2.getJSONObject(i).getJSONObject("data").getString("id");
-                m1 = bodies1.getJSONObject(i).getJSONObject("data").getDouble("m");
-                m2 = bodies2.getJSONObject(i).getJSONObject("data").getDouble("m");
-                p1 = bodies1.getJSONObject(i).getJSONObject("data").getJSONArray("p");
-                p2 = bodies2.getJSONObject(i).getJSONObject("data").getJSONArray("p");
-                v1 = bodies1.getJSONObject(i).getJSONObject("data").getJSONArray("v");
-                v2 = bodies2.getJSONObject(i).getJSONObject("data").getJSONArray("v");
-                f1 = bodies1.getJSONObject(i).getJSONObject("data").getJSONArray("f");
-                f2 = bodies2.getJSONObject(i).getJSONObject("data").getJSONArray("f");
+                id1 = bodies1.getJSONObject(i).getString("id");
+                id2 = bodies2.getJSONObject(i).getString("id");
+                m1 = bodies1.getJSONObject(i).getDouble("m");
+                m2 = bodies2.getJSONObject(i).getDouble("m");
+                p1 = bodies1.getJSONObject(i).getJSONArray("p");
+                p2 = bodies2.getJSONObject(i).getJSONArray("p");
+                v1 = bodies1.getJSONObject(i).getJSONArray("v");
+                v2 = bodies2.getJSONObject(i).getJSONArray("v");
+                f1 = bodies1.getJSONObject(i).getJSONArray("f");
+                f2 = bodies2.getJSONObject(i).getJSONArray("f");
 
                 // check equality of: id, mass, position, velocity and force
                 if (!((epsEqualId(id1, id2)) && epsEqualNumbers(m1, m2)
