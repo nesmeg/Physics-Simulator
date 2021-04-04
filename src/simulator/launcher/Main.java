@@ -2,6 +2,8 @@ package simulator.launcher;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 import org.apache.commons.cli.CommandLine;
@@ -37,6 +39,7 @@ public class Main {
 	private final static String _forceLawsDefaultValue = "nlug";
 	private final static String _stateComparatorDefaultValue = "epseq";
 	private final static Integer _stepsDefaultValue = 150;
+	private static PrintStream _outputDefaultValue;
 
 	// some attributes to stores values corresponding to command-line parameters
 	//
@@ -125,15 +128,14 @@ public class Main {
 		// TODO add support for -o, -eo, and -s (add corresponding information to
 		// cmdLineOptions)
 
-		// output
+		// output (-o)
 		cmdLineOptions.addOption(Option.builder("o").longOpt("output").hasArg()
-				.desc("Output file, where output is written. Default value: the standard output." /*+ _outputDefaultValue + "."*/).build());
-				// TODO: PREGUNTAR AL PROFE EL DEFAULT VALUE DEL OUTPUT (STANDARD OUTPUT)
-				//Creo que el default output es simplemente imprimirlo a la consola, el system.out.println... de toda la vida
-		// expected output
+				.desc("Output file, where output is written. Default value: the standard output.").build());
+
+		// expected output (-eo)
 		cmdLineOptions.addOption(Option.builder("eo").longOpt("expected-output").hasArg().desc("The expected output file. If not provided no comparison is applied").build());
 
-		// steps
+		// steps (-s)
 		cmdLineOptions.addOption(Option.builder("s").longOpt("ste").hasArg()
 				.desc("An integer representing the number of simulation steps. Default value: " + _stepsDefaultValue + ".").build());
 
@@ -204,7 +206,6 @@ public class Main {
 	private static void parseSteps(CommandLine line) throws ParseException{
 		String s = line.getOptionValue("s", _stepsDefaultValue.toString());
 		try {
-			//_steps = Integer.parseInt("s");
 			_steps = Integer.parseInt(s);
 			assert (_steps > 0);
 		} catch (Exception e) {

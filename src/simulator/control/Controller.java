@@ -39,6 +39,7 @@ public class Controller {
     public void run(int steps, OutputStream out, InputStream expOut, StateComparator cmp) throws DifferentStatesException {
         JSONObject expOutJO = null;
         if (expOut != null) {
+            // To convert the inputStream into a JSONObject we need to encapsulate it in a JSONTokener object
             expOutJO = new JSONObject(new JSONTokener(expOut));
         }
 

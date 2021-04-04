@@ -9,7 +9,7 @@ import simulator.model.MovingTowardsFixedPoint;
 public class MovingTowardsFixedPointBuilder extends Builder<ForceLaws> {
 
     public MovingTowardsFixedPointBuilder() {
-        _type = "mtcp";
+        _type = "mtfp";
 		_desc = "Moving towards fixed point";
     }
 

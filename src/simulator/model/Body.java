@@ -45,13 +45,14 @@ public class Body {
     }
 
     void resetForce() {
-        //_v_force = _v_force.minus(_v_force);
         _v_force = _v_force.scale(0);
     }
 
     void move(double t) {
         // 1. Compute acceleration
-        Vector2D v_acc = _v_force.scale(1/_mass);   // a = f / m
+        Vector2D v_acc = new Vector2D();
+        if (_mass != 0)
+            v_acc = _v_force.scale(1/_mass);   // a = f / m
         // 2. Change position
         _v_pos = _v_pos.plus(_v_vel.scale(t)).plus(v_acc.scale(0.5 * t * t));   // p = p0 + v*t + (1/2)*a*(t^2)
         // 3. Change velocity
@@ -84,17 +85,6 @@ public class Body {
 
     public String toString() {
         return getState().toString();
-        // Output example of this method:
-        // {"p":"[3.5,5.0]","v":"[4.0,7.0]","f":"[5.0,6.0]","id":"1","m":3.45}
-
-        // I THINK WE NEED THIS SECOND METHOD!!!
-        /*
-        String toStr;
-        toStr = " {" +  " \"id\": \"" + _id + "\", \"m\": "  + _mass + ", \"p\": " + _v_pos +  ", \"v\": " + _v_vel + ", \"f\": " + _v_force + " } " ;
-        return toStr;
-        */
-        // Output example of this method:
-        //  { "id": "1", "m": 3.45, "p": [3.5,5.0], "v": [4.0,7.0], "f": [5.0,6.0] }
     }
 
     public boolean equals(Body b){
