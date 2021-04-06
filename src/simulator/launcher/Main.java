@@ -2,8 +2,6 @@ package simulator.launcher;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 
 import org.apache.commons.cli.CommandLine;
@@ -39,7 +37,6 @@ public class Main {
 	private final static String _forceLawsDefaultValue = "nlug";
 	private final static String _stateComparatorDefaultValue = "epseq";
 	private final static Integer _stepsDefaultValue = 150;
-	private static PrintStream _outputDefaultValue;
 
 	// some attributes to stores values corresponding to command-line parameters
 	//
