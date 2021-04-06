@@ -35,7 +35,6 @@ public class Controller {
         }
     }
 
-    // TODO: REVISAR SI NOS ***SOBRA*** ALGO (MY BROUSTON KNOWS WHAT I MEAN)
     public void run(int steps, OutputStream out, InputStream expOut, StateComparator cmp) throws DifferentStatesException {
         JSONObject expOutJO = null;
         if (expOut != null) {
