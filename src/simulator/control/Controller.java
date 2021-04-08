@@ -2,6 +2,7 @@ package simulator.control;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.List;
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -12,6 +13,7 @@ import org.json.JSONTokener;
 import simulator.factories.Factory;
 import simulator.model.ForceLaws;
 import simulator.model.PhysicsSimulator;
+import simulator.model.SimulatorObserver;
 import simulator.model.Body;
 
 public class Controller {
@@ -71,5 +73,31 @@ public class Controller {
 
         p.println("]");
         p.println("}");
+    }
+
+    public void reset(){
+        _sim.reset();
+    }
+
+    public void setDeltaTime(double dt) {
+        _sim.setDeltaTime(dt);
+    }
+
+    public void addObserver(SimulatorObserver o){
+        _sim.addObserver(o);
+    }
+
+    public void run(int n) {
+        
+    }
+
+    public List<JSONObject> getForceLawsInfo() {
+        return _forceLawsFactory.getInfo();
+    }
+
+    public void setForceLaws(JSONObject info){
+        ForceLaws forceLaws;
+        forceLaws = _forceLawsFactory.createInstance(info);
+        _sim.setForceLaws(forceLaws);
     }
 }
