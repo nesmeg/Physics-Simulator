@@ -74,4 +74,27 @@ public class PhysicsSimulator {
         toStr = " {" +  " \"time\": \"" + _current_time + "\", \"bodies\": ["  + bodiesStr + "] }";
         return toStr;
     }
+
+    public void reset() {
+        _current_time = 0.0;
+        _bodies.clear();
+    }
+
+    public void setDeltaTime(double dt) throws IllegalArgumentException {
+        if (dt > 0) {
+            _dt = dt;
+        }
+        else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public void setForceLaws(ForceLaws forceLaws) {
+        if (forceLaws != null) {
+            _forceLaws = forceLaws;
+        }
+        else {
+            throw new IllegalArgumentException();
+        }
+    }
 }

@@ -67,30 +67,7 @@ public class Controller {
                 }
             }
             _sim.advance();
-        }            
-
-
-        // currState = _sim.getState();
-        // p.println(currState);
-        // if (expOutJO != null) {
-        //     expState = expOutJO.getJSONArray("states").getJSONObject(0);
-        //     if (!cmp.equal(expState, currState)) {
-        //         throw new DifferentStatesException(expState, currState, 0);
-        //     }
-        // }
-
-        // for (int i = 1; i <= steps; i++) {
-        //     _sim.advance();
-        //     currState = _sim.getState();
-        //     p.print(",");
-        //     p.println(currState);
-        //     if (expOutJO != null) {
-        //         expState = expOutJO.getJSONArray("states").getJSONObject(i);
-        //         if (!cmp.equal(expState, currState)) {
-        //             throw new DifferentStatesException(expState, currState, i);
-        //         }
-        //     }
-        // }
+        }
 
         p.println("]");
         p.println("}");

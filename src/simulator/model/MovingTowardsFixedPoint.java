@@ -30,4 +30,8 @@ public class MovingTowardsFixedPoint implements ForceLaws {
 
         return F_i;
     }
+
+    public String toString() {
+        return "Moving towards "+ _c + " with constant acceleration" + _g;
+    }
 }

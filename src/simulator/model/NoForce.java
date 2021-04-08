@@ -7,4 +7,8 @@ public class NoForce implements ForceLaws{
     public NoForce() {}
 
     public void apply(List<Body> bodies) {}
+
+    public String toString(){
+        return "No Force";
+    }
 }
