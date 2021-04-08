@@ -10,6 +10,7 @@ public class PhysicsSimulator {
     private double _current_time;
     private ForceLaws _forceLaws;
     private List<Body> _bodies;
+    private List<SimulatorObserver> _observers;
 
     public PhysicsSimulator(double deltaTime, ForceLaws forceLaws) throws IllegalArgumentException {
         if (deltaTime <= 0){
@@ -40,6 +41,11 @@ public class PhysicsSimulator {
         }
         // 4. Increment current time
         _current_time += _dt;
+
+        // Send notification
+        for (SimulatorObserver observer : _observers) {
+            observer.onAdvance(_bodies, _current_time);
+        }
     }
 
     public void addBody(Body b) {
@@ -48,6 +54,11 @@ public class PhysicsSimulator {
         }
         else{
             _bodies.add(b);
+        }
+
+        // Send notification
+        for (SimulatorObserver observer : _observers) {
+            observer.onBodyAdded(_bodies, b);
         }
     }
 
@@ -78,6 +89,11 @@ public class PhysicsSimulator {
     public void reset() {
         _current_time = 0.0;
         _bodies.clear();
+
+        // Send notification
+        for (SimulatorObserver observer : _observers) {
+            observer.onReset(_bodies, _current_time, _dt, _forceLaws.toString());
+        }
     }
 
     public void setDeltaTime(double dt) throws IllegalArgumentException {
@@ -86,6 +102,11 @@ public class PhysicsSimulator {
         }
         else {
             throw new IllegalArgumentException();
+        }
+        
+        // Send notification
+        for (SimulatorObserver observer : _observers) {
+            observer.onDeltaTimeChanged(dt);   
         }
     }
 
@@ -96,5 +117,19 @@ public class PhysicsSimulator {
         else {
             throw new IllegalArgumentException();
         }
+
+        // Send notification
+        for (SimulatorObserver observer : _observers) {
+           observer.onForceLawsChanged(_forceLaws.toString());
+        }
+    }
+
+    public void addObserver(SimulatorObserver o) {
+        if (!_observers.contains(o)) {
+            _observers.add(o);
+        }
+
+        // Send notification
+        o.onRegister(_bodies, _current_time, _dt, _forceLaws.toString());
     }
 }
