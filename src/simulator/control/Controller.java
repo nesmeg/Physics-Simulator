@@ -83,7 +83,7 @@ public class Controller {
         _sim.setDeltaTime(dt);
     }
 
-    public void addObserver(SimulatorObserver o){
+    public void addObserver(SimulatorObserver o) {
         _sim.addObserver(o);
     }
 
@@ -95,7 +95,7 @@ public class Controller {
         return _forceLawsFactory.getInfo();
     }
 
-    public void setForceLaws(JSONObject info){
+    public void setForceLaws(JSONObject info) {
         ForceLaws forceLaws;
         forceLaws = _forceLawsFactory.createInstance(info);
         _sim.setForceLaws(forceLaws);
