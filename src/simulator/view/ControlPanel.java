@@ -15,6 +15,13 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     // ...
     private Controller _ctrl;
     private boolean _stopped;
+    private JButton _loadFileBtn;
+    private JButton _modifyBtn;
+    private JButton _startBtn;
+    private JButton _stopBtn;
+    private JButton _exitBtn;
+    private JSpinner _steps;
+    private JTextField _deltaTime;
 
     ControlPanel(Controller ctrl) {
         _ctrl = ctrl;
@@ -30,28 +37,45 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         this.setLayout(borderLayout);
         this.add(left(), BorderLayout.WEST);
 
+        // CREATION, IMAGE, TEXT AND FUNCTION ASSIGNMENT TO THE BUTTONS
         // LOAD FILE BUTTON
-        JButton loadFileBtn = new JButton();
-        loadFileBtn.setIcon(new ImageIcon("resources/icons/open.png"));
-        loadFileBtn.addActionListener((e) -> loadFile());
+        _loadFileBtn = new JButton();
+        _loadFileBtn.setIcon(new ImageIcon("resources/icons/open.png"));
+        _loadFileBtn.setToolTipText("Open a file");
+        _loadFileBtn.addActionListener((e) -> loadFile());
 
         // MODIFY DATA BUTTON
+        _modifyBtn = new JButton();
+        _modifyBtn.setIcon(new ImageIcon("resources/icons/physics.png"));
+        _modifyBtn.setToolTipText("Modify the data of magnitudes and bodies");
+        _modifyBtn.addActionListener((e) -> modifyData());
 
         // START BUTTON
+        _startBtn = new JButton();
+        _startBtn.setIcon(new ImageIcon("resources/icons/run.png"));
+        _startBtn.setToolTipText("Start the execution");
+        _startBtn.addActionListener((e) -> start());
 
         // STOP BUTTON
+        _stopBtn = new JButton();
+        _stopBtn.setIcon(new ImageIcon("resources/icons/stop.png"));
+        _stopBtn.setToolTipText("Stop the execution");
+        _stopBtn.addActionListener((e) -> stop());
 
         // EXIT BUTTON
-        JButton ExitBtn = new JButton();
-        loadFileBtn.setIcon(new ImageIcon("resources/icons/exit.png"));
-        loadFileBtn.addActionListener((e) -> exit());
+        _exitBtn = new JButton();
+        _exitBtn.setIcon(new ImageIcon("resources/icons/exit.png"));
+        _exitBtn.setToolTipText("Close the application");
+        _exitBtn.addActionListener((e) -> exit());
     }
     
     // other private/protected methods
     // ...
 
+    // IMPLEMENTATION OF THE BUTTONS FUNCTIONALITY
     private void loadFile() {
-        JFileChooser fileChooser = new JFileChooser();
+        JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir") + "resources/examples");
+        // Im not sure that the previous parameters work, but it should directly open the user folder where the json examples are saved
         
         int ret = fileChooser.showOpenDialog(this);
         if (ret == JFileChooser.APPROVE_OPTION) {
@@ -71,15 +95,39 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     }
 
     private void modifyData() {
-
+        // TODO: ufffffffffff... this is very complicated
     }
 
     private void start() {
-        
+        // Disable all buttons except the stop one and set the value of stopped to false
+        _loadFileBtn.setEnabled(false);
+        _modifyBtn.setEnabled(false);
+        _startBtn.setEnabled(false);
+        _exitBtn.setEnabled(false);
+        _stopped = false;
+
+        // Set delta time to the one specified in the text field
+        double new_dt = Double.parseDouble(_deltaTime.getText()); // get the text from the text field and parse it to double
+        _ctrl.setDeltaTime(new_dt); // assign it to the controller
+
+        // Call the method run_sim with the current value of steps
+        int steps = (int)_steps.getValue();
+        run_sim(steps);
+        // When we have finished the execution, enable the buttons back
+        _loadFileBtn.setEnabled(true);
+        _modifyBtn.setEnabled(true);
+        _startBtn.setEnabled(true);
+        _exitBtn.setEnabled(true);
     }
 
     private void stop() {
-        
+        // Stop the execution
+        _stopped = true;
+        // Enable the buttons back
+        _loadFileBtn.setEnabled(true);
+        _modifyBtn.setEnabled(true);
+        _startBtn.setEnabled(true);
+        _exitBtn.setEnabled(true);
     }
 
     private void exit() {
