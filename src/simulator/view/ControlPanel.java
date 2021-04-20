@@ -1,12 +1,17 @@
 package simulator.view;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.List;
 import java.util.jar.JarFile;
 
 import javax.swing.*;
+
+import org.json.JSONObject;
 
 import simulator.control.Controller;
 import simulator.model.SimulatorObserver;
@@ -95,7 +100,40 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     }
 
     private void modifyData() {
-        // TODO: ufffffffffff... this is very complicated
+
+        
+        // 1. Open dialog box to select the physic law
+        JFrame frame = new JFrame("Force Laws Selection");
+        List<JSONObject> laws = _ctrl.getForceLawsInfo();
+        String[] forces = new String[laws.size()];
+        JSONObject chosenLaw;
+        
+        //--------------------JCOMBOBOX----------------------------------\\
+        for (int i = 0; i < laws.size(); i++) {
+            forces[i] = laws.get(i).getString("desc");
+        }
+        
+        JComboBox selector = new JComboBox<String>(forces);
+        selector.setName("Force Law: "); // REVISAR ESTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        selector.addActionListener(new ActionListener(){
+		    public void actionPerformed(ActionEvent e) {
+                
+                String name = (String)selector.getSelectedItem();
+                // 2. Once selected, change the force laws
+                for (int i = 0; i < laws.size(); i++) {
+                    if (name.equals(laws.get(i).getString("desc"))) {
+                        chosenLaw = laws.get(i);
+                        break; // stop searching for force laws
+                    }
+                }
+                
+            }
+        });
+
+        //-------------------------
+
+        frame.add(selector);
     }
 
     private void start() {
