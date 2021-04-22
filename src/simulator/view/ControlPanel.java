@@ -29,6 +29,8 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     private JSpinner _steps;
     private JTextField _deltaTime;
 
+    private JSONObject _chosenLaw;
+
     ControlPanel(Controller ctrl) {
         _ctrl = ctrl;
         _stopped = true;
@@ -38,10 +40,6 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
     private void initGUI() {
         // TODO build the tool bar by adding buttons, etc.
-        BorderLayout borderLayout = new BorderLayout();
-
-        this.setLayout(borderLayout);
-        this.add(left(), BorderLayout.WEST); // TODO: REVISAR ESTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         // CREATION, IMAGE, TEXT AND FUNCTION ASSIGNMENT TO THE BUTTONS
         // LOAD FILE BUTTON
@@ -68,11 +66,35 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         _stopBtn.setToolTipText("Stop the execution");
         _stopBtn.addActionListener((e) -> stop());
 
+        // STEPS
+        _steps = new JSpinner();
+        _steps.setToolTipText("Simulation steps to execute");
+
+        // DELTA TIME
+        _deltaTime = new JTextField();
+        _deltaTime.setText("2500");
+        _deltaTime.setToolTipText("Delta time");
+
         // EXIT BUTTON
         _exitBtn = new JButton();
         _exitBtn.setIcon(new ImageIcon("resources/icons/exit.png"));
         _exitBtn.setToolTipText("Close the application");
         _exitBtn.addActionListener((e) -> exit());
+
+        // Collocation of buttons
+        JPanel leftButtons = new JPanel();
+        leftButtons.add(_loadFileBtn);
+        leftButtons.add(_modifyBtn);
+        leftButtons.add(_startBtn);
+        leftButtons.add(_stopBtn);
+        leftButtons.add(_steps);
+        leftButtons.add(_deltaTime);
+        
+        JPanel rightButtons = new JPanel();
+        rightButtons.add(_stopBtn);
+
+        this.add(leftButtons, BorderLayout.WEST);
+        this.add(rightButtons, BorderLayout.EAST);
     }
     
     // other private/protected methods
@@ -102,29 +124,29 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
     private void modifyData() {
 
-        
         // 1. Open dialog box to select the physic law
         JFrame frame = new JFrame("Force Laws Selection");
         List<JSONObject> laws = _ctrl.getForceLawsInfo();
         String[] forces = new String[laws.size()];
-        JSONObject chosenLaw;
         
         //--------------------JCOMBOBOX----------------------------------\\
         for (int i = 0; i < laws.size(); i++) {
             forces[i] = laws.get(i).getString("desc");
         }
         
-        JComboBox selector = new JComboBox<String>(forces);
-        selector.setName("Force Law: "); // REVISAR ESTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        JComboBox<String> selector = new JComboBox<String>(forces);
+        
+
+        selector.setName("Force Law: "); // TODO REVISAR ESTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         selector.addActionListener(new ActionListener(){
 		    public void actionPerformed(ActionEvent e) {
-                
+
                 String name = (String)selector.getSelectedItem();
                 // 2. Once selected, change the force laws
                 for (int i = 0; i < laws.size(); i++) {
                     if (name.equals(laws.get(i).getString("desc"))) {
-                        chosenLaw = laws.get(i);
+                        _chosenLaw = laws.get(i);
                         break; // stop searching for force laws
                     }
                 }
@@ -186,8 +208,13 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
                 _ctrl.run(1);
             } catch (Exception e) {
                 // TODO show the error in a dialog box
+                JOptionPane.showMessageDialog(null, "Simulation error.");
                 // TODO enable all buttons
                 _stopped = true;
+                _loadFileBtn.setEnabled(true);
+                _modifyBtn.setEnabled(true);
+                _startBtn.setEnabled(true);
+                _exitBtn.setEnabled(true);
                 return;
             }
             SwingUtilities.invokeLater( new Runnable() {
@@ -199,40 +226,37 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         } else {
             _stopped = true;
             // TODO enable all buttons
+            _loadFileBtn.setEnabled(true);
+            _modifyBtn.setEnabled(true);
+            _startBtn.setEnabled(true);
+            _exitBtn.setEnabled(true);
         }
     }
-
-
+    
 
     // SimulatorObserver methods
     // ...
     @Override
     public void onRegister(List<Body> bodies, double time, double dt, String fLawsDesc) {
-
+        this._deltaTime.setText(String.valueOf(dt));
     }
 
     @Override
     public void onReset(List<Body> bodies, double time, double dt, String fLawsDesc) {
-
+        this._deltaTime.setText(String.valueOf(dt));
     }
     
     @Override
-    public void onBodyAdded(List<Body> bodies, Body b) {
-
-    }
+    public void onBodyAdded(List<Body> bodies, Body b) {}
     
     @Override
-    public void onAdvance(List<Body> bodies, double time) {
-
-    }
+    public void onAdvance(List<Body> bodies, double time) {}
     
     @Override
     public void onDeltaTimeChanged(double dt) {
-
+        this._deltaTime.setText(String.valueOf(dt));
     }
     
     @Override
-    public void onForceLawsChanged(String fLawsDesc) {
-
-    }
+    public void onForceLawsChanged(String fLawsDesc) {}
 }

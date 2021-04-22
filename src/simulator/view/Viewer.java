@@ -119,14 +119,30 @@ public class Viewer extends JComponent implements SimulatorObserver {
             gr.drawString("h: toggle help, v: toggle vectors, +: zoom-in, -: zoom-out, =: fit", 8, 30);
             gr.drawString("Scaling ratio: " + _scale, 8, 35);
         }
-
+        
         // 3. draw bodies (with vectors if _showVectors is true)
-        
-        if (_showVectors) {
+        gr.setColor(Color.BLUE);
+        int radius = 5;
 
+        for (Body body : _bodies) {
+            double x = body.getPosition().getX();
+            double y = body.getPosition().getY();
+
+            gr.fillOval(_centerX + (int) (x/_scale), _centerY - (int) (y/_scale) , radius * 2, radius * 2);
+            gr.drawString(body.getId(), (int) x,  (int) y + 15);
+
+            if (_showVectors) {
+                int vel_x = (int) body.getVelocity().direction().getX();
+                int vel_y = (int) body.getVelocity().direction().getY();
+                drawLineWithArrow(gr, (int) x, (int) y, (int) x + vel_x, (int) y + vel_y, 2, 2, Color.GREEN, Color.GREEN); // GREEN ARROW -> VELOCITY
+                
+                int force_x = (int) body.getVelocity().direction().getX();
+                int force_y = (int) body.getVelocity().direction().getY();
+                drawLineWithArrow(gr, (int) x, (int) y, (int) x + force_x, (int) y + force_y, 2, 2, Color.RED, Color.RED); // RED ARROW -> FORCE
+            }
         }
-
         
+    
     }
 
     // other private/protected methods
@@ -205,18 +221,13 @@ public class Viewer extends JComponent implements SimulatorObserver {
     
     @Override
     public void onAdvance(List<Body> bodies, double time) {
-        _bodies = bodies;   //Preguntar a Samir por que no tenemos que poner esto -------------------------------------------------------------------------------------------------------------
         repaint();
     }
     
     @Override
-    public void onDeltaTimeChanged(double dt) {
-        repaint();
-    }
+    public void onDeltaTimeChanged(double dt) {}
     
     @Override
-    public void onForceLawsChanged(String fLawsDesc) {
-        repaint();
-    }
+    public void onForceLawsChanged(String fLawsDesc) {}
 
 }
