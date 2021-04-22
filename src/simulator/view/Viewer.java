@@ -67,6 +67,12 @@ public class Viewer extends JComponent implements SimulatorObserver {
                     default:
                 }
             }
+
+            @Override
+			public void keyTyped(KeyEvent arg0) {}
+
+            @Override
+			public void keyReleased(KeyEvent e) {}
         });
 
         addMouseListener(new MouseListener() {
@@ -75,6 +81,18 @@ public class Viewer extends JComponent implements SimulatorObserver {
             public void mouseEntered(MouseEvent e) {
                 requestFocus();
             }
+
+            @Override
+            public void mouseClicked(MouseEvent arg0) {}
+
+            @Override
+			public void mouseExited(MouseEvent arg0) {}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {}
         });
     }
 
@@ -90,9 +108,25 @@ public class Viewer extends JComponent implements SimulatorObserver {
         // calculate the center
         _centerX = getWidth() / 2;
         _centerY = getHeight() / 2;
-        // TODO draw a cross at center
-        // TODO draw bodies (with vectors if _showVectors is true)
-        // TODO draw help if _showHelp is true
+        // 1. draw a cross at center
+        gr.drawLine(_centerX - 5, _centerY, _centerX + 5, _centerY);
+        gr.drawLine(_centerX, _centerY - 5, _centerX, _centerY + 5);
+        gr.setColor(Color.RED);
+
+        // 2. draw help if _showHelp is true
+        if (_showHelp) {
+            gr.setColor(Color.RED);
+            gr.drawString("h: toggle help, v: toggle vectors, +: zoom-in, -: zoom-out, =: fit", 8, 30);
+            gr.drawString("Scaling ratio: " + _scale, 8, 35);
+        }
+
+        // 3. draw bodies (with vectors if _showVectors is true)
+        
+        if (_showVectors) {
+
+        }
+
+        
     }
 
     // other private/protected methods
@@ -150,32 +184,39 @@ public class Viewer extends JComponent implements SimulatorObserver {
     // ...
     @Override
     public void onRegister(List<Body> bodies, double time, double dt, String fLawsDesc) {
-
+        _bodies = bodies;
+        autoScale();
+        repaint();
     }
 
     @Override
     public void onReset(List<Body> bodies, double time, double dt, String fLawsDesc) {
-
+        _bodies = bodies;
+        autoScale();
+        repaint();
     }
     
     @Override
     public void onBodyAdded(List<Body> bodies, Body b) {
-
+        _bodies = bodies;
+        autoScale();
+        repaint();
     }
     
     @Override
     public void onAdvance(List<Body> bodies, double time) {
-
+        _bodies = bodies;   //Preguntar a Samir por que no tenemos que poner esto -------------------------------------------------------------------------------------------------------------
+        repaint();
     }
     
     @Override
     public void onDeltaTimeChanged(double dt) {
-
+        repaint();
     }
     
     @Override
     public void onForceLawsChanged(String fLawsDesc) {
-
+        repaint();
     }
 
 }
