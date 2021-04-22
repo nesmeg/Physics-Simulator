@@ -14,6 +14,7 @@ import javax.swing.*;
 import org.json.JSONObject;
 
 import simulator.control.Controller;
+import simulator.model.Body;
 import simulator.model.SimulatorObserver;
 
 public class ControlPanel extends JPanel implements SimulatorObserver {
@@ -40,7 +41,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         BorderLayout borderLayout = new BorderLayout();
 
         this.setLayout(borderLayout);
-        this.add(left(), BorderLayout.WEST);
+        this.add(left(), BorderLayout.WEST); // TODO: REVISAR ESTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         // CREATION, IMAGE, TEXT AND FUNCTION ASSIGNMENT TO THE BUTTONS
         // LOAD FILE BUTTON
@@ -200,6 +201,38 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
             // TODO enable all buttons
         }
     }
+
+
+
     // SimulatorObserver methods
     // ...
+    @Override
+    public void onRegister(List<Body> bodies, double time, double dt, String fLawsDesc) {
+
+    }
+
+    @Override
+    public void onReset(List<Body> bodies, double time, double dt, String fLawsDesc) {
+
+    }
+    
+    @Override
+    public void onBodyAdded(List<Body> bodies, Body b) {
+
+    }
+    
+    @Override
+    public void onAdvance(List<Body> bodies, double time) {
+
+    }
+    
+    @Override
+    public void onDeltaTimeChanged(double dt) {
+
+    }
+    
+    @Override
+    public void onForceLawsChanged(String fLawsDesc) {
+
+    }
 }

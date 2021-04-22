@@ -1,6 +1,15 @@
 package simulator.view;
 
 import java.awt.event.MouseListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -39,19 +48,19 @@ public class Viewer extends JComponent implements SimulatorObserver {
                         _scale = _scale * 1.1;
                         repaint();
                         break;
-                    case ’+’:
+                    case '+':
                         _scale = Math.max(1000.0, _scale / 1.1);
                         repaint();
                         break;
-                    case ’=’:
+                    case '=':
                         autoScale();
                         repaint();
                         break;
-                    case ’h’:
+                    case 'h':
                         _showHelp = !_showHelp;
                         repaint();
                         break;
-                    case ’v’:
+                    case 'v':
                         _showVectors = !_showVectors;
                         repaint();
                         break;
@@ -135,7 +144,38 @@ public class Viewer extends JComponent implements SimulatorObserver {
         g.setColor(arrowColor);
         g.fillPolygon(xpoints, ypoints, 3);
     }
+
+
     // SimulatorObserver methods
     // ...
+    @Override
+    public void onRegister(List<Body> bodies, double time, double dt, String fLawsDesc) {
+
+    }
+
+    @Override
+    public void onReset(List<Body> bodies, double time, double dt, String fLawsDesc) {
+
+    }
+    
+    @Override
+    public void onBodyAdded(List<Body> bodies, Body b) {
+
+    }
+    
+    @Override
+    public void onAdvance(List<Body> bodies, double time) {
+
+    }
+    
+    @Override
+    public void onDeltaTimeChanged(double dt) {
+
+    }
+    
+    @Override
+    public void onForceLawsChanged(String fLawsDesc) {
+
+    }
 
 }
