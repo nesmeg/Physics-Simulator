@@ -1,9 +1,10 @@
 Mark with an X the tasks already done
 
-[ ] Fix Samir's comments
+[ ] Implement changes done in version 2 of assignment 1 (comments.0.txt)
+[ ] Fix Samir's comments on the version 2 of assignment 1 (comments.1.txt)
 [ ] Revise Controller.java line 91
 [X] Changes in main
-[ ] Handle exception of the control panel (just before 6.2)
+[X] Handle exception of the control panel (just before 6.2)
 [ ] Finish the modifyData button of the control panel
 [ ] Finish BodiesTable and BodiesTableModel
 
