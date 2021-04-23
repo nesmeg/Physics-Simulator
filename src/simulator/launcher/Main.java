@@ -1,8 +1,12 @@
 package simulator.launcher;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -28,6 +32,7 @@ import simulator.factories.NoForceBuilder;
 import simulator.model.Body;
 import simulator.model.ForceLaws;
 import simulator.model.PhysicsSimulator;
+import simulator.view.MainWindow;
 
 public class Main {
 
@@ -37,6 +42,7 @@ public class Main {
 	private final static String _forceLawsDefaultValue = "nlug";
 	private final static String _stateComparatorDefaultValue = "epseq";
 	private final static Integer _stepsDefaultValue = 150;
+	private final static String _modeDefaultValue = "batch";
 
 	// some attributes to stores values corresponding to command-line parameters
 	//
@@ -48,6 +54,7 @@ public class Main {
 	private static String _outFile = null;
 	private static String _expFile = null;
 	private static Integer _steps = null;
+	private static String _mode = null;
 
 	// factories
 	private static Factory<Body> _bodyFactory;
@@ -94,6 +101,7 @@ public class Main {
 			parseDeltaTimeOption(line);
 			parseForceLawsOption(line);
 			parseStateComparatorOption(line);
+			parseModeOption(line); // added
 
 			// if there are some remaining arguments, then something wrong is
 			// provided in the command line!
@@ -122,9 +130,6 @@ public class Main {
 		// input file
 		cmdLineOptions.addOption(Option.builder("i").longOpt("input").hasArg().desc("Bodies JSON input file.").build());
 
-		// TODO add support for -o, -eo, and -s (add corresponding information to
-		// cmdLineOptions)
-
 		// output (-o)
 		cmdLineOptions.addOption(Option.builder("o").longOpt("output").hasArg()
 				.desc("Output file, where output is written. Default value: the standard output.").build());
@@ -136,6 +141,8 @@ public class Main {
 		cmdLineOptions.addOption(Option.builder("s").longOpt("ste").hasArg()
 				.desc("An integer representing the number of simulation steps. Default value: " + _stepsDefaultValue + ".").build());
 
+		cmdLineOptions.addOption(Option.builder("m").longOpt("mode").hasArg()
+				.desc("Execution Mode. Possible values: 'batch' (Batch mode), 'gui' (Graphical User Interface mode). Default value: 'batch'.").build());
 
 		// delta-time
 		cmdLineOptions.addOption(Option.builder("dt").longOpt("delta-time").hasArg()
@@ -261,21 +268,29 @@ public class Main {
 	private static void parseForceLawsOption(CommandLine line) throws ParseException {
 		String fl = line.getOptionValue("fl", _forceLawsDefaultValue);
 		_forceLawsInfo = parseWRTFactory(fl, _forceLawsFactory);
-		if (_forceLawsInfo == null) {
+
+		if (_forceLawsInfo == null)
 			throw new ParseException("Invalid force laws: " + fl);
-		}
 	}
 
 	private static void parseStateComparatorOption(CommandLine line) throws ParseException {
 		String scmp = line.getOptionValue("cmp", _stateComparatorDefaultValue);
 		_stateComparatorInfo = parseWRTFactory(scmp, _stateComparatorFactory);
-		if (_stateComparatorInfo == null) {
+
+		if (_stateComparatorInfo == null)
 			throw new ParseException("Invalid state comparator: " + scmp);
-		}
+	}
+
+	private static void parseModeOption(CommandLine line) throws ParseException {
+		String mode = line.getOptionValue("m", _modeDefaultValue);
+
+		if (mode.equals("batch") || mode.equals("gui"))
+			_mode = mode;
+		else
+			throw new ParseException("Invalid mode: " + mode);
 	}
 
 	private static void startBatchMode() throws Exception {
-		// TODO complete this method
 		// Create a simulator
 		ForceLaws forceLaws = _forceLawsFactory.createInstance(_forceLawsInfo);
 		PhysicsSimulator simulator = new PhysicsSimulator(_dtime, forceLaws);
@@ -297,19 +312,48 @@ public class Main {
 			stateComparator = _stateComparatorFactory.createInstance(_stateComparatorInfo);
 		}
 
-		// Creates a Controller
+		// Create a Controller
 		Controller controller = new Controller(simulator, _forceLawsFactory, _bodyFactory);
 
-		// Adds the bodies to the simulator
+		// Add the bodies to the simulator
 		controller.loadBodies(input);
 	
-		// Starts the simulator
+		// Start the simulator
 		controller.run(_steps, output, expectedOutput, stateComparator);
+	}
+
+	private static void startGUIMode() throws FileNotFoundException, InvocationTargetException, InterruptedException {
+		// Create a simulator
+		ForceLaws forceLaws = _forceLawsFactory.createInstance(_forceLawsInfo);
+		PhysicsSimulator simulator = new PhysicsSimulator(_dtime, forceLaws);
+
+		// Create a Controller
+		Controller controller = new Controller(simulator, _forceLawsFactory, _bodyFactory);
+
+		// In GUI mode, input file is optional, so:
+		if (_inFile != null) {
+			FileInputStream input = new FileInputStream(_inFile);
+
+			// Add the bodies to the simulator
+			controller.loadBodies(input);
+		}
+
+		// Start the simulator
+		SwingUtilities.invokeAndWait(new Runnable() {
+			@Override
+			public void run() {
+				new MainWindow(controller);
+			}
+		});
 	}
 
 	private static void start(String[] args) throws Exception {
 		parseArgs(args);
-		startBatchMode();
+
+		if (_mode.equals("batch"))
+			startBatchMode();
+		else // we don't need to check _mode.equals("gui") because if it is not "batch" or "gui", we don't arrive here
+			startGUIMode();
 	}
 
 	public static void main(String[] args) {

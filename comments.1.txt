@@ -1,0 +1,15 @@
+Samir's comments on first assignment to be fixed:
+
+- In MovingTowardsFixedPointBuilder you do not handle the case in which only one of the values is give, it should be something like:
+
+    Double g=9.81;
+    Vector2D c = new Vector2D();
+    if ( data.has("g)) g=date.getDouble("g");
+    if ( data.has("c") c=....;
+    Return new MovingTowardsFixedPoint(c,g);
+
+    > TO BE DONE
+
+- in the builders, do not use isEmpty, as if it has the key you expect 
+0 in startBatchMode, if _outFile is not null you should use System.out
+    > TO BE DONE
