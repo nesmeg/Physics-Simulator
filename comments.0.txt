@@ -1,0 +1,97 @@
+general =======
+
+- in general it is ok, you have errors related to not handling default values, handle all comments I mentions below and resubmit in a week from now
+
+- have you executed your assignment with the command lines that I gave at all?!? I think they due to not supporting default values in builders
+
+Running: Main -i resources/examples/ex1.2body.json -o resources/output/out.1.json -s 10000 -dt 10000 -fl nlug 
+Something went wrong ... java.lang.IllegalArgumentException: Invalid value for createInstance: {"data":{},"type":"nlug"} at simulator.factories.BuilderBasedFactory.createInstance(BuilderBasedFactory.java:35) at simulator.launcher.Main.startBatchMode(Main.java:280) at simulator.launcher.Main.start(Main.java:312) at simulator.launcher.Main.main(Main.java:318) at simulator.launcher.GenerateOutput.main(GenerateOutput.java:38) 
+
+Running: Main -i resources/examples/ex1.2body.json -o resources/output/out.2.json -s 10000 -dt 10000 -fl mtfp
+Something went wrong ... java.lang.IllegalArgumentException: Invalid value for createInstance: {"data":{},"type":"mtfp"} at simulator.factories.BuilderBasedFactory.createInstance(BuilderBasedFactory.java:35) at simulator.launcher.Main.startBatchMode(Main.java:280) at simulator.launcher.Main.start(Main.java:312) at simulator.launcher.Main.main(Main.java:318) at simulator.launcher.GenerateOutput.main(GenerateOutput.java:38) 
+
+Running: Main -i resources/examples/ex2.3body.json -o resources/output/out.3.json -s 10000 -dt 10000 -fl nlug
+Something went wrong ... java.lang.IllegalArgumentException: Invalid value for createInstance: {"data":{},"type":"nlug"} at simulator.factories.BuilderBasedFactory.createInstance(BuilderBasedFactory.java:35) at simulator.launcher.Main.startBatchMode(Main.java:280) at simulator.launcher.Main.start(Main.java:312) at simulator.launcher.Main.main(Main.java:318) at simulator.launcher.GenerateOutput.main(GenerateOutput.java:38) 
+
+Running: Main -i resources/examples/ex2.3body.json -o resources/output/out.4.json -s 10000 -dt 10000 -fl mtfp
+Something went wrong ... java.lang.IllegalArgumentException: Invalid value for createInstance: {"data":{},"type":"mtfp"} at simulator.factories.BuilderBasedFactory.createInstance(BuilderBasedFactory.java:35) at simulator.launcher.Main.startBatchMode(Main.java:280) at simulator.launcher.Main.start(Main.java:312) at simulator.launcher.Main.main(Main.java:318) at simulator.launcher.GenerateOutput.main(GenerateOutput.java:38) 
+
+Running: Main -i resources/examples/ex3.4body.json -o resources/output/out.5.json -s 10000 -dt 10000 -fl nlug
+Something went wrong ... java.lang.IllegalArgumentException: Invalid value for createInstance: {"data":{},"type":"nlug"} at simulator.factories.BuilderBasedFactory.createInstance(BuilderBasedFactory.java:35) at simulator.launcher.Main.startBatchMode(Main.java:280) at simulator.launcher.Main.start(Main.java:312) at simulator.launcher.Main.main(Main.java:318) at simulator.launcher.GenerateOutput.main(GenerateOutput.java:38) 
+
+Running: Main -i resources/examples/ex3.4body.json -o resources/output/out.6.json -s 10000 -dt 10000 -fl mtfp
+Something went wrong ... java.lang.IllegalArgumentException: Invalid value for createInstance: {"data":{},"type":"mtfp"} at simulator.factories.BuilderBasedFactory.createInstance(BuilderBasedFactory.java:35) at simulator.launcher.Main.startBatchMode(Main.java:280) at simulator.launcher.Main.start(Main.java:312) at simulator.launcher.Main.main(Main.java:318) at simulator.launcher.GenerateOutput.main(GenerateOutput.java:38) 
+
+Running: Main -i resources/examples/ex4.4body.json -o resources/output/out.7.json -s 10000 -dt 10000 -fl nlug
+Something went wrong ... java.lang.IllegalArgumentException: Invalid value for createInstance: {"data":{},"type":"nlug"} at simulator.factories.BuilderBasedFactory.createInstance(BuilderBasedFactory.java:35) at simulator.launcher.Main.startBatchMode(Main.java:280) at simulator.launcher.Main.start(Main.java:312) at simulator.launcher.Main.main(Main.java:318) at simulator.launcher.GenerateOutput.main(GenerateOutput.java:38) 
+
+Running: Main -i resources/examples/ex4.4body.json -o resources/output/out.8.json -s 10000 -dt 10000 -fl mtfp
+Something went wrong ... java.lang.IllegalArgumentException: Invalid value for createInstance: {"data":{},"type":"mtfp"} 
+
+Running: Main -i resources/examples/ex1.2body.json -o resources/output/out.1s.json -s 10000 -fl nlug at simulator.factories.BuilderBasedFactory.createInstance(BuilderBasedFactory.java:35) at simulator.launcher.Main.startBatchMode(Main.java:280) at simulator.launcher.Main.start(Main.java:312) at simulator.launcher.Main.main(Main.java:318) at simulator.launcher.GenerateOutput.main(GenerateOutput.java:38)
+Something went wrong ... java.lang.IllegalArgumentException: Invalid value for createInstance: {"data":{},"type":"nlug"} at simulator.factories.BuilderBasedFactory.createInstance(BuilderBasedFactory.java:35) at simulator.launcher.Main.startBatchMode(Main.java:280) at simulator.launcher.Main.start(Main.java:312) at simulator.launcher.Main.main(Main.java:318) at simulator.launcher.GenerateOutput.main(GenerateOutput.java:38) 
+
+Running: Main -i resources/examples/ex1.2body.json -o resources/output/out.2s.json -s 10000 -fl mtfp
+Something went wrong ... java.lang.IllegalArgumentException: Invalid value for createInstance: {"data":{},"type":"mtfp"} at simulator.factories.BuilderBasedFactory.createInstance(BuilderBasedFactory.java:35) at simulator.launcher.Main.startBatchMode(Main.java:280) at simulator.launcher.Main.start(Main.java:312) at simulator.launcher.Main.main(Main.java:318) at simulator.launcher.GenerateOutput.main(GenerateOutput.java:38) 
+
+Running: Main -i resources/examples/ex2.3body.json -o resources/output/out.3s.json -s 10000 -fl nlug
+Something went wrong ... java.lang.IllegalArgumentException: Invalid value for createInstance: {"data":{},"type":"nlug"} at simulator.factories.BuilderBasedFactory.createInstance(BuilderBasedFactory.java:35) at simulator.launcher.Main.startBatchMode(Main.java:280) at simulator.launcher.Main.start(Main.java:312) at simulator.launcher.Main.main(Main.java:318) at simulator.launcher.GenerateOutput.main(GenerateOutput.java:38) 
+
+Running: Main -i resources/examples/ex2.3body.json -o resources/output/out.4s.json -s 10000 -fl mtfp
+Something went wrong ... java.lang.IllegalArgumentException: Invalid value for createInstance: {"data":{},"type":"mtfp"} at simulator.factories.BuilderBasedFactory.createInstance(BuilderBasedFactory.java:35) at simulator.launcher.Main.startBatchMode(Main.java:280) at simulator.launcher.Main.start(Main.java:312) at simulator.launcher.Main.main(Main.java:318) at simulator.launcher.GenerateOutput.main(GenerateOutput.java:38) 
+
+Running: Main -i resources/examples/ex3.4body.json -o resources/output/out.5s.json -s 10000 -fl nlug
+Something went wrong ... java.lang.IllegalArgumentException: Invalid value for createInstance: {"data":{},"type":"nlug"} at simulator.factories.BuilderBasedFactory.createInstance(BuilderBasedFactory.java:35) at simulator.launcher.Main.startBatchMode(Main.java:280) at simulator.launcher.Main.start(Main.java:312) at simulator.launcher.Main.main(Main.java:318) at simulator.launcher.GenerateOutput.main(GenerateOutput.java:38) 
+
+Running: Main -i resources/examples/ex3.4body.json -o resources/output/out.6s.json -s 10000 -fl mtfp
+Something went wrong ... java.lang.IllegalArgumentException: Invalid value for createInstance: {"data":{},"type":"mtfp"} at simulator.factories.BuilderBasedFactory.createInstance(BuilderBasedFactory.java:35) at simulator.launcher.Main.startBatchMode(Main.java:280) at simulator.launcher.Main.start(Main.java:312) at simulator.launcher.Main.main(Main.java:318) at simulator.launcher.GenerateOutput.main(GenerateOutput.java:38) 
+
+Running: Main -i resources/examples/ex4.4body.json -o resources/output/out.7s.json -s 10000 -fl nlug
+Something went wrong ... java.lang.IllegalArgumentException: Invalid value for createInstance: {"data":{},"type":"nlug"} at simulator.factories.BuilderBasedFactory.createInstance(BuilderBasedFactory.java:35) at simulator.launcher.Main.startBatchMode(Main.java:280) at simulator.launcher.Main.start(Main.java:312) at simulator.launcher.Main.main(Main.java:318) at simulator.launcher.GenerateOutput.main(GenerateOutput.java:38) 
+
+Running: Main -i resources/examples/ex4.4body.json -o resources/output/out.8s.json -s 10000 -fl mtfp
+Something went wrong ... java.lang.IllegalArgumentException: Invalid value for createInstance: {"data":{},"type":"mtfp"} at simulator.factories.BuilderBasedFactory.createInstance(BuilderBasedFactory.java:35) at simulator.launcher.Main.startBatchMode(Main.java:280) at simulator.launcher.Main.start(Main.java:312) at simulator.launcher.Main.main(Main.java:318) at simulator.launcher.GenerateOutput.main(GenerateOutput.java:38)
+
+
+model ===== 
+    # Body.java: 
+        - this can be done using state.put("p",_v_pos.asJSONArray())
+        --- same for other vectos
+                tempArray.put(_v_pos.getX());
+                tempArray.put(_v_pos.getY());
+                state.put("p", tempArray);
+        - you should implement equals(Object o) and not equals(Body b)
+
+    # ForceLaws.java: ok 
+    # MassLosingBody.java: ok 
+    # MovingTowardsFixedPoint.java: ok 
+    # NewtonUniversalGravitation.java: 
+        - better do not add any force when body != body2 
+        - do not repeat calculations, just store in local variable and reuse: d_ij.magnitude() 
+    # NoForce.java: ok 
+    # PhysicsSimulator.java: 
+        - to String should be use getState().toString() instead of building the string 
+    
+factories ========= 
+    # BasicBodyBuilder.java: 
+        - the check data.isEmpty() does not make sense, either you check that it has the correct key or do not check as all 
+    # Builder.java: ok 
+    # BuilderBasedFactory.java: ok 
+    # EpsilonEqualStatesBuilder.java: 
+        - you should have a default value 0.0 for esp 
+    # Factory.java: ok 
+    # MassEqualStatesBuilder.java: 
+    # MassLosingBodyBuilder.java: 
+        - same comments as the builder of basic body 
+    # MovingTowardsFixedPointBuilder.java: - c and g should have default values 
+    # NewtonUniversalGravitationBuilder.java: - G should have a default value # NoForceBuilder.java: ok 
+
+control ======= 
+    # Controller.java: - the last advance is not printed, you make steps+1 advances while it should be only 'steps' 
+    # EpsilonEqualStates.java: ok 
+    # MassEqualStates.java: ok 
+    # StateComparator.java: ok 
+
+launcher ======== 
+    # Main.java: 
+        - if _outFile is null you should use System.out

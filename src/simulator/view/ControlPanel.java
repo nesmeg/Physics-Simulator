@@ -112,7 +112,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
                 _ctrl.reset();
                 _ctrl.loadBodies(new FileInputStream(file));                
             } catch (FileNotFoundException e) {
-                System.err.println("Error while opening the file");
+                JOptionPane.showMessageDialog(getParent(), "Error while opening the file", "Uh-oh...", JOptionPane.ERROR_MESSAGE);
             }
 
         } else {
@@ -160,34 +160,30 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
     private void start() {
         // Disable all buttons except the stop one and set the value of stopped to false
-        _loadFileBtn.setEnabled(false);
-        _modifyBtn.setEnabled(false);
-        _startBtn.setEnabled(false);
-        _exitBtn.setEnabled(false);
+        enableButtonsTF(false);
         _stopped = false;
 
-        // Set delta time to the one specified in the text field
-        double new_dt = Double.parseDouble(_deltaTime.getText()); // get the text from the text field and parse it to double
-        _ctrl.setDeltaTime(new_dt); // assign it to the controller
+        try {
+            // Set delta time to the one specified in the text field
+            double new_dt = Double.parseDouble(_deltaTime.getText()); // get the text from the text field and parse it to double
+            _ctrl.setDeltaTime(new_dt); // assign it to the controller
 
-        // Call the method run_sim with the current value of steps
-        int steps = (int)_steps.getValue();
-        run_sim(steps);
+            // Call the method run_sim with the current value of steps
+            int steps = (int)_steps.getValue();
+            run_sim(steps);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.toString(), "Exception thrown", JOptionPane.WARNING_MESSAGE);
+        }
+        
         // When we have finished the execution, enable the buttons back
-        _loadFileBtn.setEnabled(true);
-        _modifyBtn.setEnabled(true);
-        _startBtn.setEnabled(true);
-        _exitBtn.setEnabled(true);
+        enableButtonsTF(true);
     }
 
     private void stop() {
         // Stop the execution
         _stopped = true;
         // Enable the buttons back
-        _loadFileBtn.setEnabled(true);
-        _modifyBtn.setEnabled(true);
-        _startBtn.setEnabled(true);
-        _exitBtn.setEnabled(true);
+        enableButtonsTF(true);
     }
 
     private void exit() {
@@ -206,14 +202,11 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
             try {
                 _ctrl.run(1);
             } catch (Exception e) {
-                // TODO show the error in a dialog box
-                JOptionPane.showMessageDialog(null, "Simulation error.");
-                // TODO enable all buttons
+                // show the error in a dialog box
+                JOptionPane.showMessageDialog(this, "Simulation error.", "Uh-oh...", JOptionPane.WARNING_MESSAGE);
+                // enable all buttons
                 _stopped = true;
-                _loadFileBtn.setEnabled(true);
-                _modifyBtn.setEnabled(true);
-                _startBtn.setEnabled(true);
-                _exitBtn.setEnabled(true);
+                enableButtonsTF(true);
                 return;
             }
             SwingUtilities.invokeLater( new Runnable() {
@@ -224,14 +217,22 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
             });
         } else {
             _stopped = true;
-            // TODO enable all buttons
-            _loadFileBtn.setEnabled(true);
-            _modifyBtn.setEnabled(true);
-            _startBtn.setEnabled(true);
-            _exitBtn.setEnabled(true);
+            // enable all buttons
+            enableButtonsTF(true);
         }
     }
     
+    private void enableButtonsTF(boolean enableTF) {
+        // enableTF == true => Enable all buttons
+        // enableTF == false => Disable all buttons (doesn't affect the stop button)
+
+        _loadFileBtn.setEnabled(enableTF);
+        _modifyBtn.setEnabled(enableTF);
+        _startBtn.setEnabled(enableTF);
+        _exitBtn.setEnabled(enableTF);
+        _deltaTime.setEnabled(enableTF);
+        _steps.setEnabled(enableTF);
+    }
 
     // SimulatorObserver methods
     // ...
