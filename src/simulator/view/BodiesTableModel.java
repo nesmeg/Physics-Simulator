@@ -30,7 +30,7 @@ public class BodiesTableModel extends AbstractTableModel implements SimulatorObs
 
         @Override
         public String getColumnName(int column) {
-            return columns[column];
+            return columns[column].toString();
         }
         
         @Override

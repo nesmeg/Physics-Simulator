@@ -6,7 +6,7 @@ Mark with an X the tasks already done
 [X] Changes in main
 [X] Handle exception of the control panel (just before 6.2)
 [ ] Finish the modifyData button of the control panel
-[ ] Finish BodiesTable and BodiesTableModel
+[X] Finish BodiesTable and BodiesTableModel
 
 Once all of the above are done...
 [ ] Debug and fix errors
