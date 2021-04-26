@@ -1,4 +1,4 @@
-package extra.dialog.ex1;
+//package extra.dialog.ex1;
 
 public class Dish {
 	private String _name;
