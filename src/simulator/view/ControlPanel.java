@@ -80,7 +80,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         _exitBtn.setToolTipText("Close the application");
         _exitBtn.addActionListener((e) -> exit());
 
-        // Collocation of buttons
+        // Placement of buttons
         JPanel leftButtons = new JPanel();
         leftButtons.add(_loadFileBtn);
         leftButtons.add(_modifyBtn);

@@ -24,6 +24,7 @@ public class PhysicsSimulator {
             _current_time = 0;
             _forceLaws = forceLaws;
             _bodies = new ArrayList<Body>();
+            _observers = new ArrayList<SimulatorObserver>();
         }
 
     }
@@ -127,9 +128,8 @@ public class PhysicsSimulator {
     public void addObserver(SimulatorObserver o) {
         if (!_observers.contains(o)) {
             _observers.add(o);
+            // Send notification
+            o.onRegister(_bodies, _current_time, _dt, _forceLaws.toString());
         }
-
-        // Send notification
-        o.onRegister(_bodies, _current_time, _dt, _forceLaws.toString());
     }
 }

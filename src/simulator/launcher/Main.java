@@ -50,7 +50,7 @@ public class Main {
 	private static String _inFile = null;
 	private static JSONObject _forceLawsInfo = null;
 	private static JSONObject _stateComparatorInfo = null;
-	
+
 	private static String _outFile = null;
 	private static String _expFile = null;
 	private static Integer _steps = null;
@@ -62,7 +62,7 @@ public class Main {
 	private static Factory<StateComparator> _stateComparatorFactory;
 
 	private static void init() {
-		
+
 		// initialize the bodies factory
 		ArrayList<Builder<Body>> bodyBuilders = new ArrayList<>();
 		bodyBuilders.add(new BasicBodyBuilder());
@@ -84,7 +84,7 @@ public class Main {
 	}
 
 	private static void parseArgs(String[] args) {
-		
+
 		Options cmdLineOptions = buildOptions(); // define the valid command line options
 
 		CommandLineParser parser = new DefaultParser(); // parse the command line as provided in args
@@ -93,7 +93,6 @@ public class Main {
 			CommandLine line = parser.parse(cmdLineOptions, args);
 
 			parseHelpOption(line, cmdLineOptions);
-			parseInFileOption(line);
 			// add support of -o, -eo, and -s (define corresponding parse methods)
 			parseOutFile(line); // added
 			parseExpectedOutput(line); // added
@@ -102,6 +101,7 @@ public class Main {
 			parseForceLawsOption(line);
 			parseStateComparatorOption(line);
 			parseModeOption(line); // added
+			parseInFileOption(line);
 
 			// if there are some remaining arguments, then something wrong is
 			// provided in the command line!
@@ -135,14 +135,17 @@ public class Main {
 				.desc("Output file, where output is written. Default value: the standard output.").build());
 
 		// expected output (-eo)
-		cmdLineOptions.addOption(Option.builder("eo").longOpt("expected-output").hasArg().desc("The expected output file. If not provided no comparison is applied").build());
+		cmdLineOptions.addOption(Option.builder("eo").longOpt("expected-output").hasArg()
+				.desc("The expected output file. If not provided no comparison is applied").build());
 
 		// steps (-s)
-		cmdLineOptions.addOption(Option.builder("s").longOpt("ste").hasArg()
-				.desc("An integer representing the number of simulation steps. Default value: " + _stepsDefaultValue + ".").build());
+		cmdLineOptions.addOption(Option.builder("s").longOpt("ste").hasArg().desc(
+				"An integer representing the number of simulation steps. Default value: " + _stepsDefaultValue + ".")
+				.build());
 
-		cmdLineOptions.addOption(Option.builder("m").longOpt("mode").hasArg()
-				.desc("Execution Mode. Possible values: 'batch' (Batch mode), 'gui' (Graphical User Interface mode). Default value: 'batch'.").build());
+		cmdLineOptions.addOption(Option.builder("m").longOpt("mode").hasArg().desc(
+				"Execution Mode. Possible values: 'batch' (Batch mode), 'gui' (Graphical User Interface mode). Default value: 'batch'.")
+				.build());
 
 		// delta-time
 		cmdLineOptions.addOption(Option.builder("dt").longOpt("delta-time").hasArg()
@@ -194,7 +197,7 @@ public class Main {
 
 	private static void parseInFileOption(CommandLine line) throws ParseException {
 		_inFile = line.getOptionValue("i");
-		if (_inFile == null) {
+		if (_inFile == null && _mode == "batch") {
 			throw new ParseException("In batch mode an input file of bodies is required");
 		}
 	}
@@ -202,12 +205,12 @@ public class Main {
 	private static void parseOutFile(CommandLine line) {
 		_outFile = line.getOptionValue("o");
 	}
-	
+
 	private static void parseExpectedOutput(CommandLine line) {
 		_expFile = line.getOptionValue("eo");
 	}
-	
-	private static void parseSteps(CommandLine line) throws ParseException{
+
+	private static void parseSteps(CommandLine line) throws ParseException {
 		String s = line.getOptionValue("s", _stepsDefaultValue.toString());
 		try {
 			_steps = Integer.parseInt(s);
@@ -294,15 +297,16 @@ public class Main {
 		// Create a simulator
 		ForceLaws forceLaws = _forceLawsFactory.createInstance(_forceLawsInfo);
 		PhysicsSimulator simulator = new PhysicsSimulator(_dtime, forceLaws);
-		
+
 		// Create corresponding input/outout
-		FileInputStream input = new FileInputStream(_inFile); // an input file is always going to be required so we dont need a condition
+		FileInputStream input = new FileInputStream(_inFile); // an input file is always going to be required so we dont
+																// need a condition
 
 		FileOutputStream output = null;
 		if (_outFile != null) {
 			output = new FileOutputStream(_outFile);
 		}
-		
+
 		FileInputStream expectedOutput = null;
 		StateComparator stateComparator = null;
 		if (_expFile != null) {
@@ -317,7 +321,7 @@ public class Main {
 
 		// Add the bodies to the simulator
 		controller.loadBodies(input);
-	
+
 		// Start the simulator
 		controller.run(_steps, output, expectedOutput, stateComparator);
 	}
@@ -352,7 +356,8 @@ public class Main {
 
 		if (_mode.equals("batch"))
 			startBatchMode();
-		else // we don't need to check _mode.equals("gui") because if it is not "batch" or "gui", we don't arrive here
+		else // we don't need to check _mode.equals("gui") because if it is not "batch" or
+				// "gui", we don't arrive here
 			startGUIMode();
 	}
 

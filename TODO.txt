@@ -10,3 +10,9 @@ Mark with an X the tasks already done
 
 Once all of the above are done...
 [ ] Debug and fix errors
+
+
+
+--Cambios:
+He puesto en el parseInFile un if que comprueba si el mode es gui o batch porque si es gui el inFile no es obligatorio;
+Inicializado SimulatorObserver list en el Physics simulator class 

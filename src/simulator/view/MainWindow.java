@@ -44,7 +44,7 @@ public class MainWindow extends JFrame {
         centerPanel.add(_viewer);
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
-
+        
     }
 
     // other private/protected methods

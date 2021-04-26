@@ -20,6 +20,10 @@ public class NewtonUniversalGravitationBuilder extends Builder<ForceLaws> {
 
 			newton = new NewtonUniversalGravitation(g);
 		}
+		else {
+			// If data is empty, put default values in the constructor
+			newton = new NewtonUniversalGravitation(6.67E-11);
+		}
 
 		return newton;
 	}
