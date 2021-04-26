@@ -28,8 +28,6 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     private JSpinner _steps;
     private JTextField _deltaTime;
 
-    private JSONObject _chosenLaw;
-
     ControlPanel(Controller ctrl) {
         _ctrl = ctrl;
         _stopped = true;
@@ -127,12 +125,18 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         JFrame frame = new JFrame("Force Laws Selection");
         List<JSONObject> laws = _ctrl.getForceLawsInfo();
         String[] forces = new String[laws.size()];
+        JSONObject chosenLaw = null;
+        String headerMesssage = "Select a force law and provide values for the parameters in the Value column (default values are used for parameters with no value).";
         
         //--------------------JCOMBOBOX----------------------------------\\
         for (int i = 0; i < laws.size(); i++) {
             forces[i] = laws.get(i).getString("desc");
         }
+
+        String chosen = (String) JOptionPane.showInputDialog(this, headerMesssage, "Force Laws Selection",
+                                        JOptionPane.PLAIN_MESSAGE, null, forces, forces[0]);
         
+                                        
         JComboBox<String> selector = new JComboBox<String>(forces);
         
 
@@ -145,7 +149,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
                 // 2. Once selected, change the force laws
                 for (int i = 0; i < laws.size(); i++) {
                     if (name.equals(laws.get(i).getString("desc"))) {
-                        _chosenLaw = laws.get(i);
+                        chosenLaw = laws.get(i);
                         break; // stop searching for force laws
                     }
                 }
