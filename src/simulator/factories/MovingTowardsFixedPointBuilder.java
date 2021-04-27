@@ -22,6 +22,10 @@ public class MovingTowardsFixedPointBuilder extends Builder<ForceLaws> {
 
 			mtfp = new MovingTowardsFixedPoint(v_c, g);
 		}
+		else {
+			// If data is empty, put default values in the constructor
+			mtfp = new MovingTowardsFixedPoint(new Vector2D(0, 0), 9.81);
+		}
 
 		return mtfp;
 	}

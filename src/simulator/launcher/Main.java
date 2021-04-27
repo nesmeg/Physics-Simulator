@@ -3,6 +3,7 @@ package simulator.launcher;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
@@ -302,9 +303,12 @@ public class Main {
 		FileInputStream input = new FileInputStream(_inFile); // an input file is always going to be required so we dont
 																// need a condition
 
-		FileOutputStream output = null;
+		OutputStream output = null;
 		if (_outFile != null) {
 			output = new FileOutputStream(_outFile);
+		}
+		else {
+			output = System.out;
 		}
 
 		FileInputStream expectedOutput = null;

@@ -16,17 +16,15 @@ public class MassLosingBodyBuilder extends Builder<Body> {
   protected Body createTheInstance(JSONObject data) {
     MassLosingBody mlb = null;
 
-    if (!data.isEmpty()) { // if we have some data
-      // get all the data needed to create a body:
-      String id = data.getString("id");
-      Vector2D v_pos = new Vector2D(data.getJSONArray("p").getDouble(0), data.getJSONArray("p").getDouble(1));
-      Vector2D v_vel = new Vector2D(data.getJSONArray("v").getDouble(0), data.getJSONArray("v").getDouble(1));
-      double mass = data.getDouble("m");
-      double lossFrequency = data.getDouble("freq");
-      double lossFactor = data.getDouble("factor");
+    // get all the data needed to create a body:
+    String id = data.getString("id");
+    Vector2D v_pos = new Vector2D(data.getJSONArray("p").getDouble(0), data.getJSONArray("p").getDouble(1));
+    Vector2D v_vel = new Vector2D(data.getJSONArray("v").getDouble(0), data.getJSONArray("v").getDouble(1));
+    double mass = data.getDouble("m");
+    double lossFrequency = data.getDouble("freq");
+    double lossFactor = data.getDouble("factor");
 
-      mlb = new MassLosingBody(id, v_vel, v_pos, mass, lossFactor, lossFrequency);
-    }
+    mlb = new MassLosingBody(id, v_vel, v_pos, mass, lossFactor, lossFrequency);
 
     return mlb;
   }

@@ -1,6 +1,5 @@
 package simulator.model;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import simulator.misc.Vector2D;
@@ -61,24 +60,13 @@ public class Body {
 
     public JSONObject getState() {
         JSONObject state = new JSONObject();
-        JSONArray tempArray = new JSONArray();
 
         state.put("id", _id);
         state.put("m", _mass);
 
-        tempArray.put(_v_pos.getX());
-        tempArray.put(_v_pos.getY());
-        state.put("p", tempArray);
-
-        tempArray = new JSONArray();
-        tempArray.put(_v_vel.getX());
-        tempArray.put(_v_vel.getY());
-        state.put("v", tempArray);
-
-        tempArray = new JSONArray();
-        tempArray.put(_v_force.getX());
-        tempArray.put(_v_force.getY());
-        state.put("f", tempArray);
+        state.put("p",_v_pos.asJSONArray());
+        state.put("v",_v_vel.asJSONArray());
+        state.put("f",_v_force.asJSONArray());
 
         return state;
     }
@@ -87,7 +75,8 @@ public class Body {
         return getState().toString();
     }
 
-    public boolean equals(Body b){
-        return b.getId().equals(this._id); 
+    public boolean equals(Object o){
+        Body b = (Body) o;
+        return b.getId().equals(this._id);
     }
 }

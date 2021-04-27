@@ -76,15 +76,8 @@ public class PhysicsSimulator {
     }
 
     public String toString() {
-        String bodiesStr = "";
-
-        for (Body body : _bodies) {
-            bodiesStr += body.toString();
-        }
-        
-        String toStr;
-        toStr = " {" +  " \"time\": \"" + _current_time + "\", \"bodies\": ["  + bodiesStr + "] }";
-        return toStr;
+       
+        return getState().toString();
     }
 
     public void reset() {

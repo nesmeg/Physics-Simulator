@@ -20,6 +20,10 @@ public class EpsilonEqualStatesBuilder extends Builder<StateComparator> {
 
 			epseq = new EpsilonEqualStates(eps);
 		}
+		else {
+			// If data is empty, put default values in the constructor
+			epseq = new EpsilonEqualStates(0.1);
+		}
 
 		return epseq;
 	}

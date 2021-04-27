@@ -15,7 +15,9 @@ public class NewtonUniversalGravitation implements ForceLaws {
     public void apply(List<Body> bodies) {
         for (Body body : bodies) {
             for (Body body2 : bodies) {
-                body.addForce(calculateF(body, body2));
+                if (!body.equals(body2)) {
+                    body.addForce(calculateF(body, body2));    
+                }    
             }
         }
     }
@@ -27,8 +29,9 @@ public class NewtonUniversalGravitation implements ForceLaws {
         
         // 2. Calculate f(i,j)
         double f_ij;
-        if (d_ij.magnitude() > 0) {
-            f_ij = _G * ((body_i.getMass() * body_j.getMass()) / (Math.pow(d_ij.magnitude(), 2)));
+        double d_ij_magnitude = d_ij.magnitude();
+        if (d_ij_magnitude > 0) {
+            f_ij = _G * ((body_i.getMass() * body_j.getMass()) / (Math.pow(d_ij_magnitude, 2)));
         }
         else
             f_ij = 0;
