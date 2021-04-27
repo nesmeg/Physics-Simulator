@@ -13,19 +13,12 @@ public class NewtonUniversalGravitationBuilder extends Builder<ForceLaws> {
 	}
 
     protected ForceLaws createTheInstance(JSONObject data) {
-		NewtonUniversalGravitation newton = null;
+		double g = 6.67E-11;
 
-		if (!data.isEmpty()) {
-			double g = data.getDouble("G");
+		if (data.has("G"))
+			g = data.getDouble("G");
 
-			newton = new NewtonUniversalGravitation(g);
-		}
-		else {
-			// If data is empty, put default values in the constructor
-			newton = new NewtonUniversalGravitation(6.67E-11);
-		}
-
-		return newton;
+		return new NewtonUniversalGravitation(g);
 	}
 
     protected JSONObject createData() {

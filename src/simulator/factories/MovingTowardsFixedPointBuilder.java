@@ -14,20 +14,18 @@ public class MovingTowardsFixedPointBuilder extends Builder<ForceLaws> {
     }
 
     protected ForceLaws createTheInstance(JSONObject data) {
-		MovingTowardsFixedPoint mtfp = null;
 
-		if (!data.isEmpty()) {
-			Vector2D v_c = new Vector2D(data.getJSONArray("c").getDouble(0), data.getJSONArray("c").getDouble(1));
-			double g = data.getDouble("g");
+		Double g = 9.81;
+    	Vector2D v_c = new Vector2D();
 
-			mtfp = new MovingTowardsFixedPoint(v_c, g);
-		}
-		else {
-			// If data is empty, put default values in the constructor
-			mtfp = new MovingTowardsFixedPoint(new Vector2D(0, 0), 9.81);
-		}
+		if (data.has("g"))
+			g = data.getDouble("g");
 
-		return mtfp;
+		if (data.has("c"))
+			v_c = new Vector2D(data.getJSONArray("c").getDouble(0), data.getJSONArray("c").getDouble(1));
+
+		return new MovingTowardsFixedPoint(v_c, g);
+
 	}
     
     protected JSONObject createData() {

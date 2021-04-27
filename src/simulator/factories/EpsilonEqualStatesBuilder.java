@@ -13,19 +13,12 @@ public class EpsilonEqualStatesBuilder extends Builder<StateComparator> {
     }
 
     protected StateComparator createTheInstance(JSONObject data) {
-		EpsilonEqualStates epseq = null;
+		double eps = 0.1;
 
-		if (!data.isEmpty()) {
-			double eps = data.getDouble("eps");
+		if (data.has("eps"))
+			eps = data.getDouble("eps");
 
-			epseq = new EpsilonEqualStates(eps);
-		}
-		else {
-			// If data is empty, put default values in the constructor
-			epseq = new EpsilonEqualStates(0.1);
-		}
-
-		return epseq;
+		return new EpsilonEqualStates(eps);
 	}
 
     protected JSONObject createData() {

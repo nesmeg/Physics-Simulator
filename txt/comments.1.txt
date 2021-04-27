@@ -8,8 +8,8 @@ Samir's comments on first assignment to be fixed:
     if ( data.has("c") c=....;
     Return new MovingTowardsFixedPoint(c,g);
 
-    > TO BE DONE
+    > DONE
 
 - in the builders, do not use isEmpty, as if it has the key you expect 
 0 in startBatchMode, if _outFile is not null you should use System.out
-    > TO BE DONE
+    > DONE
