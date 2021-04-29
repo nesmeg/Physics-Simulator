@@ -98,7 +98,9 @@ public class Controller {
     }
 
     public void run(int n) {
-        // TODO: ESTO QUE MIERDAS ES
+        for (int i = 0; i < n; i++) {
+            _sim.advance();
+        }
     }
 
     public List<JSONObject> getForceLawsInfo() {

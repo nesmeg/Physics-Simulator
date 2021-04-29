@@ -9,12 +9,14 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 
 import org.json.JSONObject;
 
 import simulator.control.Controller;
 import simulator.model.Body;
 import simulator.model.SimulatorObserver;
+import simulator.model.ForceLaws;
 
 public class ControlPanel extends JPanel implements SimulatorObserver {
     // ...
@@ -27,6 +29,94 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     private JButton _exitBtn;
     private JSpinner _steps;
     private JTextField _deltaTime;
+
+    private JsonTableModel _dataTableModel;
+
+    private JComboBox<ForceLaws> _selector;
+    private DefaultComboBoxModel<ForceLaws> _selectorModel;
+    private int _apply;
+
+    private class JsonTableModel extends AbstractTableModel {
+        private static final long serialVersionUID = 1L;
+
+		private String[] _header = { "Key", "Value", "Description" };
+		String[][] _data;
+
+        JsonTableModel(int numOfParameters) {
+			_data = new String[numOfParameters][3];
+			clear();
+		}
+
+        public void clear() {
+			for (int i = 0; i < 5; i++)
+				for (int j = 0; j < 2; j++)
+					_data[i][j] = "";
+			fireTableStructureChanged();
+		}
+
+        @Override
+		public String getColumnName(int column) {
+			return _header[column];
+		}
+
+		@Override
+		public int getRowCount() {
+			return _data.length;
+		}
+
+		@Override
+		public int getColumnCount() {
+			return _header.length;
+		}
+
+		@Override
+		public boolean isCellEditable(int rowIndex, int columnIndex) {
+            if (getColumnName(columnIndex).equals("Value")) 
+                return true;
+			return false;
+		}
+
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			return _data[rowIndex][columnIndex];
+		}
+
+		@Override
+		public void setValueAt(Object o, int rowIndex, int columnIndex) {
+			_data[rowIndex][columnIndex] = o.toString();
+		}
+
+		// Method getData() returns a String corresponding to a JSON structure
+		// with column 1 as keys and column 2 as values.
+
+		// This method return the coIt is important to build it as a string, if
+		// we create a corresponding JSONObject and use put(key,value), all values
+		// will be added as string. This also means that if users want to add a
+		// string value they should add the quotes as well as part of the
+		// value (2nd column).
+		//
+		public String getData() {
+			StringBuilder s = new StringBuilder();
+			s.append('{');
+			for (int i = 0; i < _data.length; i++) {
+				if (!_data[i][0].isEmpty() && !_data[i][1].isEmpty()) {
+					s.append('"');
+					s.append(_data[i][0]);
+					s.append('"');
+					s.append(':');
+					s.append(_data[i][1]);
+					s.append(',');
+				}
+			}
+
+			if (s.length() > 1)
+				s.deleteCharAt(s.length() - 1);
+			s.append('}');
+
+			return s.toString();
+		}
+    }
+
 
     ControlPanel(Controller ctrl) {
         _ctrl = ctrl;
@@ -122,44 +212,104 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     private void modifyData() {
 
         // 1. Open dialog box to select the physic law
-        JFrame frame = new JFrame("Force Laws Selection");
+        JDialog dialog = new JDialog(this, "Force Laws Selection");
         List<JSONObject> laws = _ctrl.getForceLawsInfo();
         String[] forces = new String[laws.size()];
         JSONObject chosenLaw = null;
-        String headerMesssage = "Select a force law and provide values for the parameters in the Value column (default values are used for parameters with no value).";
+        _apply = 0;
         
-        //--------------------JCOMBOBOX----------------------------------\\
+
         for (int i = 0; i < laws.size(); i++) {
             forces[i] = laws.get(i).getString("desc");
         }
 
-        String chosen = (String) JOptionPane.showInputDialog(this, headerMesssage, "Force Laws Selection",
-                                        JOptionPane.PLAIN_MESSAGE, null, forces, forces[0]);
+        // initial text
+        JLabel text = new JLabel("<html><p>Select a force law and provide values for the parameters in the <b>Value column</b> (default values are used for parameters with no value).</p></html>");
+
+		text.setAlignmentX(CENTER_ALIGNMENT);
+		dialog.add(text);
+
+		dialog.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        // table
+        _dataTableModel = new JsonTableModel();
+		JTable dataTable = new JTable(_dataTableModel) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+				Component component = super.prepareRenderer(renderer, row, column);
+				int rendererWidth = component.getPreferredSize().width;
+				TableColumn tableColumn = getColumnModel().getColumn(column);
+				tableColumn.setPreferredWidth(
+						Math.max(rendererWidth + getIntercellSpacing().width, tableColumn.getPreferredWidth()));
+				return component;
+			}
+		};
+		JScrollPane tabelScroll = new JScrollPane(dataTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        dialog.add(tabelScroll);
+
+		dialog.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        JPanel buttonsPanel = new JPanel();
+		buttonsPanel.setAlignmentX(CENTER_ALIGNMENT);
+		mainPanel.add(buttonsPanel);
+
+        // comboBox
+        _selectorModel = new DefaultComboBoxModel<>();
+        _selector = new JComboBox<>(forces);
+
+        dialog.add(_selector);
+
+        JButton cancelButton = new JButton("Cancel");
+		cancelButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				_apply = 0;
+				dialog.setVisible(false);
+			}
+		});
+		buttonsPanel.add(cancelButton);
+
+        JButton okButton = new JButton("OK");
+		okButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (_dishesModel.getSelectedItem() != null) {
+					_apply = 1;
+					dialog.setVisible(false);
+				}
+			}
+		});
+		buttonsPanel.add(okButton);
         
-                                        
-        JComboBox<String> selector = new JComboBox<String>(forces);
-        
+    }
 
-        selector.setName("Force Law: "); // TODO REVISAR ESTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    private JTable createTable() {
+        _dataTableModel = new JsonTableModel();
 
-        selector.addActionListener(new ActionListener(){
-		    public void actionPerformed(ActionEvent e) {
+        JTable dataTable = new JTable(_dataTableModel) {
+			private static final long serialVersionUID = 1L;
 
-                String name = (String)selector.getSelectedItem();
-                // 2. Once selected, change the force laws
-                for (int i = 0; i < laws.size(); i++) {
-                    if (name.equals(laws.get(i).getString("desc"))) {
-                        chosenLaw = laws.get(i);
-                        break; // stop searching for force laws
-                    }
-                }
-                
-            }
-        });
+			// we override prepareRenderer to resized rows to fit to content
+			@Override
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+				Component component = super.prepareRenderer(renderer, row, column);
+				int rendererWidth = component.getPreferredSize().width;
+				TableColumn tableColumn = getColumnModel().getColumn(column);
+				tableColumn.setPreferredWidth(
+						Math.max(rendererWidth + getIntercellSpacing().width, tableColumn.getPreferredWidth()));
+				return component;
+			}
+		};
+		JScrollPane tabelScroll = new JScrollPane(dataTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		mainPanel.add(tabelScroll);
 
-        //-------------------------
-
-        frame.add(selector);
+		mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
     }
 
     private void start() {
