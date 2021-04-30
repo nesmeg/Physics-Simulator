@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.*;
@@ -31,28 +33,46 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     private JTextField _deltaTime;
 
     private JsonTableModel _dataTableModel;
+    private JTable _dataTable;
 
     private JComboBox<ForceLaws> _selector;
     private DefaultComboBoxModel<ForceLaws> _selectorModel;
     private int _apply;
 
+    // Nested class for the model of the table
     private class JsonTableModel extends AbstractTableModel {
         private static final long serialVersionUID = 1L;
 
 		private String[] _header = { "Key", "Value", "Description" };
 		String[][] _data;
+        private JSONObject _selectedLaw;
+        private int _numOfParameters;
 
-        JsonTableModel(int numOfParameters) {
-			_data = new String[numOfParameters][3];
-			clear();
+        JsonTableModel(JSONObject selectedLaw) {
+            _selectedLaw = selectedLaw;
+
+            if (_selectedLaw.getString("type").equals("nlug"))
+                _data = new String[1][3]; // 1 parameter (G)
+            else if (_selectedLaw.getString("type").equals("mtfp"))
+                _data = new String[2][3]; // 2 parameters (c, g)
+            else if (_selectedLaw.getString("type").equals("ng"))
+                _data = new String[0][3]; // 0 parameters
+
+            initialize();
 		}
 
-        public void clear() {
-			for (int i = 0; i < 5; i++)
-				for (int j = 0; j < 2; j++)
-					_data[i][j] = "";
-			fireTableStructureChanged();
-		}
+        public void initialize() {
+            int i = 0;
+            Iterator<String> keys = _selectedLaw.keys(); // keys of the force law to be iterated
+
+            while (keys.hasNext()) {
+                String key = keys.next();
+                _data[i][0] = key; // Key column
+                _data[i][1] = ""; // Value column (initially empty)
+                _data[i][2] = _selectedLaw.getString("desc"); // Description column
+                i++;
+            }
+        }
 
         @Override
 		public String getColumnName(int column) {
@@ -188,6 +208,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     // ...
 
     // IMPLEMENTATION OF THE BUTTONS FUNCTIONALITY
+    // LOAD FILE BUTTON
     private void loadFile() {
         JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir") + "resources/examples");
         // Im not sure that the previous parameters work, but it should directly open the user folder where the json examples are saved
@@ -209,18 +230,21 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         
     }
 
+    //      ////// MODIFY FORCE LAW BUTTON \\\\\\
     private void modifyData() {
 
         // 1. Open dialog box to select the physic law
         JDialog dialog = new JDialog(this, "Force Laws Selection");
-        List<JSONObject> laws = _ctrl.getForceLawsInfo();
+        List<JSONObject> lawsInfo = _ctrl.getForceLawsInfo();
         String[] forces = new String[laws.size()];
         JSONObject chosenLaw = null;
         _apply = 0;
+
+        dialog.setVisible(true);
         
 
         for (int i = 0; i < laws.size(); i++) {
-            forces[i] = laws.get(i).getString("desc");
+            forces[i] = lawsInfo.get(i).getString("desc");
         }
 
         // initial text
@@ -231,44 +255,20 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
 		dialog.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        // table
-        _dataTableModel = new JsonTableModel();
-		JTable dataTable = new JTable(_dataTableModel) {
-			private static final long serialVersionUID = 1L;
+        // Table (by default we create a table including the force law with index 0)
+        dialog.add(createTable(lawsInfo.get(0)));
 
-			@Override
-			public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-				Component component = super.prepareRenderer(renderer, row, column);
-				int rendererWidth = component.getPreferredSize().width;
-				TableColumn tableColumn = getColumnModel().getColumn(column);
-				tableColumn.setPreferredWidth(
-						Math.max(rendererWidth + getIntercellSpacing().width, tableColumn.getPreferredWidth()));
-				return component;
-			}
-		};
-		JScrollPane tabelScroll = new JScrollPane(dataTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        dialog.add(tabelScroll);
-
-		dialog.add(Box.createRigidArea(new Dimension(0, 20)));
-
+        // OK and Cancel buttons
         JPanel buttonsPanel = new JPanel();
 		buttonsPanel.setAlignmentX(CENTER_ALIGNMENT);
-		mainPanel.add(buttonsPanel);
-
-        // comboBox
-        _selectorModel = new DefaultComboBoxModel<>();
-        _selector = new JComboBox<>(forces);
-
-        dialog.add(_selector);
 
         JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				_apply = 0;
-				dialog.setVisible(false);
+				// do nothing on the controller
+				dialog.setVisible(false);// close the window (dialog) of modifyData
 			}
 		});
 		buttonsPanel.add(cancelButton);
@@ -278,18 +278,71 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (_dishesModel.getSelectedItem() != null) {
-					_apply = 1;
-					dialog.setVisible(false);
+				if (_selector.getSelectedItem() != null) {
+
+					// if we press OK, we have to change the controller:
+                    int i = 0;
+                    boolean found = false;
+
+                    // know which law we have selected from the array of strings that the comboBox has:
+                    while (i < lawsInfo.size() && !found ) {
+                        if (lawsInfo.get(i).getString("desc").equalsIgnoreCase(_selector.getSelectedItem())) {
+                            JSONObject selectedLaw = lawsInfo.get(i);
+                            found = true;
+                        }
+                        i++;
+                    }
+
+                    Iterator<String> keys = selectedLaw.keys(); // keys of the force law to be iterated
+                    JSONObject newForceLaw = new JSONObject();
+                    i = 0;
+
+                    while (keys.hasNext()) {
+                        newForceLaw.put(keys.next(), _dataTable.getValueAt(i, 1));
+                        // we take the value of the cell (i,1) because row i is the key we are looking
+                        // for and column 1 always contains the value of that key
+                        i++;
+                    }
+
+                    _ctrl.setForceLaws(newForceLaw); // change the force law in the controller
+
+					dialog.setVisible(false); // close the window (dialog) of modifyData
 				}
 			}
 		});
 		buttonsPanel.add(okButton);
+
+		dialog.add(buttonsPanel);
+
+
+        // comboBox
+        _selectorModel = new DefaultComboBoxModel<>();
+        _selector = new JComboBox<>(forces);
+        // identify when the force law is changed
+        _selector.addActionListener((e) -> optionChanged(_selector.getSelectedItem(), lawsInfo));
+
+        dialog.add(_selector);
         
     }
 
-    private JTable createTable() {
-        _dataTableModel = new JsonTableModel();
+    // Method called when there is a change in the option chosen in the
+    // JComboBox to trigger the change of table
+    private void optionChanged(String selectedLaw, List<JSONObject> lawsInfo) {
+        int i = 0;
+        boolean found = false;
+
+        while (i < lawsInfo.size() && !found ) {
+            if (lawsInfo.get(i).getString("desc").equalsIgnoreCase(selectedLaw)) {
+                _dataTable = createTable(lawsInfo.get(i)); // change the _dataTable with new data
+                found = true;
+            }
+            i++;
+        }
+    }
+
+    private JTable createTable(JSONObject selectedLaw) {
+
+        _dataTableModel = new JsonTableModel(selectedLaw);
 
         JTable dataTable = new JTable(_dataTableModel) {
 			private static final long serialVersionUID = 1L;
@@ -310,8 +363,13 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 		mainPanel.add(tabelScroll);
 
 		mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        return dataTable;
     }
 
+    //      ////// END OF MODIFY FORCE LAW BUTTON \\\\\\
+
+    // START BUTTON
     private void start() {
         // Disable all buttons except the stop one and set the value of stopped to false
         enableButtonsTF(false);
@@ -333,6 +391,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         enableButtonsTF(true);
     }
 
+    // STOP BUTTON
     private void stop() {
         // Stop the execution
         _stopped = true;
@@ -340,6 +399,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         enableButtonsTF(true);
     }
 
+    // EXIT BUTTON
     private void exit() {
         JFrame exit = new JFrame("Exit confirmation");
 
@@ -350,6 +410,9 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
             System.exit(0);
         }
     }
+
+
+
 
     private void run_sim(int n) {
         if ( n>0 && !_stopped ) {
