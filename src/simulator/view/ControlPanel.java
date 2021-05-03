@@ -1,6 +1,8 @@
 package simulator.view;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -12,6 +14,8 @@ import java.util.List;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import org.json.JSONObject;
 
@@ -35,9 +39,8 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     private JsonTableModel _dataTableModel;
     private JTable _dataTable;
 
-    private JComboBox<ForceLaws> _selector;
+    private JComboBox<String> _selector;
     private DefaultComboBoxModel<ForceLaws> _selectorModel;
-    private int _apply;
 
     // Nested class for the model of the table
     private class JsonTableModel extends AbstractTableModel {
@@ -46,7 +49,6 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 		private String[] _header = { "Key", "Value", "Description" };
 		String[][] _data;
         private JSONObject _selectedLaw;
-        private int _numOfParameters;
 
         JsonTableModel(JSONObject selectedLaw) {
             _selectedLaw = selectedLaw;
@@ -207,7 +209,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     // other private/protected methods
     // ...
 
-    // IMPLEMENTATION OF THE BUTTONS FUNCTIONALITY
+    // IMPLEMENTATION OF THE BUTTONS FUNCTIONALITY 
     // LOAD FILE BUTTON
     private void loadFile() {
         JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir") + "resources/examples");
@@ -236,14 +238,13 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         // 1. Open dialog box to select the physic law
         JDialog dialog = new JDialog(this, "Force Laws Selection");
         List<JSONObject> lawsInfo = _ctrl.getForceLawsInfo();
-        String[] forces = new String[laws.size()];
+        String[] forces = new String[lawsInfo.size()];
         JSONObject chosenLaw = null;
-        _apply = 0;
 
         dialog.setVisible(true);
         
 
-        for (int i = 0; i < laws.size(); i++) {
+        for (int i = 0; i < lawsInfo.size(); i++) {
             forces[i] = lawsInfo.get(i).getString("desc");
         }
 
@@ -283,11 +284,12 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 					// if we press OK, we have to change the controller:
                     int i = 0;
                     boolean found = false;
+                    JSONObject selectedLaw = new JSONObject();
 
                     // know which law we have selected from the array of strings that the comboBox has:
                     while (i < lawsInfo.size() && !found ) {
-                        if (lawsInfo.get(i).getString("desc").equalsIgnoreCase(_selector.getSelectedItem())) {
-                            JSONObject selectedLaw = lawsInfo.get(i);
+                        if (lawsInfo.get(i).getString("desc").equalsIgnoreCase(_selector.getSelectedItem().toString())) {
+                            selectedLaw = lawsInfo.get(i);
                             found = true;
                         }
                         i++;
@@ -317,9 +319,9 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
         // comboBox
         _selectorModel = new DefaultComboBoxModel<>();
-        _selector = new JComboBox<>(forces);
+        _selector = new JComboBox<String>(forces);
         // identify when the force law is changed
-        _selector.addActionListener((e) -> optionChanged(_selector.getSelectedItem(), lawsInfo));
+        _selector.addActionListener((e) -> optionChanged(_selector.getSelectedItem().toString(), lawsInfo));
 
         dialog.add(_selector);
         
@@ -358,11 +360,6 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 				return component;
 			}
 		};
-		JScrollPane tabelScroll = new JScrollPane(dataTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		mainPanel.add(tabelScroll);
-
-		mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         return dataTable;
     }
