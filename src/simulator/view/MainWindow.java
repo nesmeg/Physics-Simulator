@@ -20,6 +20,8 @@ public class MainWindow extends JFrame {
         super("Physics Simulator");
         _ctrl = ctrl;
         initGUI();
+
+        this.setVisible(true);
     }
 
     private void initGUI() {
