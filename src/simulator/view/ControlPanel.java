@@ -3,6 +3,7 @@ package simulator.view;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -236,13 +237,21 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     private void modifyData() {
 
         // 1. Open dialog box to select the physic law
-        JDialog dialog = new JDialog(this, "Force Laws Selection");
+
+        Window parentWindow = SwingUtilities.windowForComponent(this); 
+        // or pass 'this' if you are inside the panel
+        JFrame parentFrame = null;
+        if (parentWindow instanceof JFrame) {
+            parentFrame = (JFrame)parentWindow;
+        }
+        JDialog dialog = new JDialog(parentFrame, "Force Laws Selection");
+
         List<JSONObject> lawsInfo = _ctrl.getForceLawsInfo();
         String[] forces = new String[lawsInfo.size()];
         JSONObject chosenLaw = null;
 
         dialog.setVisible(true);
-        
+
 
         for (int i = 0; i < lawsInfo.size(); i++) {
             forces[i] = lawsInfo.get(i).getString("desc");
