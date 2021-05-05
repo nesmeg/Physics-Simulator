@@ -8,6 +8,14 @@ Mark with an X the tasks already done
 [ ] Finish the modifyData button of the control panel
 [X] Finish BodiesTable and BodiesTableModel
 
+ERRORES
+[ ] Set size of all windows
+[ ] Place the buttons
+[ ] Fix modifyData button
+[ ] Disable all buttons when running
+[ ] Print Bodies
+
+
 Once all of the above are done...
 [ ] Debug and fix errors
 
