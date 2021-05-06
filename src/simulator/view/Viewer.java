@@ -1,5 +1,6 @@
 package simulator.view;
 
+import java.awt.BorderLayout;
 import java.awt.event.MouseListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -12,7 +13,9 @@ import java.awt.RenderingHints;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.border.TitledBorder;
 
 import simulator.control.Controller;
 import simulator.misc.Vector2D;
@@ -34,6 +37,11 @@ public class Viewer extends JComponent implements SimulatorObserver {
     }
 
     private void initGUI() {
+        
+        setLayout(new BorderLayout());
+        setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black, 2),
+                "Bodies",
+                    TitledBorder.LEFT, TitledBorder.TOP));
         // TODO add border with title
         _bodies = new ArrayList<>();
         _scale = 1.0;
@@ -117,19 +125,19 @@ public class Viewer extends JComponent implements SimulatorObserver {
         if (_showHelp) {
             gr.setColor(Color.RED);
             gr.drawString("h: toggle help, v: toggle vectors, +: zoom-in, -: zoom-out, =: fit", 8, 30);
-            gr.drawString("Scaling ratio: " + _scale, 8, 35);
+            gr.drawString("Scaling ratio: " + _scale, 8, 45);
         }
         
         // 3. draw bodies (with vectors if _showVectors is true)
-        gr.setColor(Color.BLUE);
         int radius = 5;
 
         for (Body body : _bodies) {
+            gr.setColor(Color.BLUE);
             double x = body.getPosition().getX();
             double y = body.getPosition().getY();
 
             gr.fillOval(_centerX + (int) (x/_scale), _centerY - (int) (y/_scale) , radius * 2, radius * 2);
-            gr.drawString(body.getId(), (int) x,  (int) y + 15);
+            gr.drawString(body.getId(), (int) (x / _scale) + _centerX, _centerY - (int) (y/_scale) - 3);
 
             if (_showVectors) {
                 int vel_x = (int) body.getVelocity().direction().getX();

@@ -173,6 +173,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         _stopBtn = new JButton();
         _stopBtn.setIcon(new ImageIcon("resources/icons/stop.png"));
         _stopBtn.setToolTipText("Stop the execution");
+        _stopBtn.setEnabled(false);
         _stopBtn.addActionListener((e) -> stop());
 
         // STEPS
@@ -400,9 +401,6 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.toString(), "Exception thrown", JOptionPane.WARNING_MESSAGE);
         }
-        
-        // When we have finished the execution, enable the buttons back
-        enableButtonsTF(true);
     }
 
     // STOP BUTTON
@@ -460,6 +458,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         _loadFileBtn.setEnabled(enableTF);
         _modifyBtn.setEnabled(enableTF);
         _startBtn.setEnabled(enableTF);
+        _stopBtn.setEnabled(!enableTF);
         _exitBtn.setEnabled(enableTF);
         _deltaTime.setEnabled(enableTF);
         _steps.setEnabled(enableTF);

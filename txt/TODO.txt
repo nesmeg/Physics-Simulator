@@ -12,16 +12,11 @@ ERRORES
 [ ] Set size of all windows
 [X] Place the buttons
 [ ] Fix modifyData button
-[ ] Disable all buttons when running
-[ ] Print Bodies
+[ ] Fix the bouncing of statusBar (with separators)
+[X] Disable all buttons when running
+[X] Print Bodies
 [ ] Berder Layout East West cambiar
 
 
 Once all of the above are done...
 [ ] Debug and fix errors
-
-
-
---Cambios:
-He puesto en el parseInFile un if que comprueba si el mode es gui o batch porque si es gui el inFile no es obligatorio;
-Inicializado SimulatorObserver list en el Physics simulator class 
