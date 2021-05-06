@@ -149,7 +149,6 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     }
 
     private void initGUI() {
-        // TODO build the tool bar by adding buttons, etc.
 
         // CREATION, IMAGE, TEXT AND FUNCTION ASSIGNMENT TO THE BUTTONS
         // LOAD FILE BUTTON
@@ -177,13 +176,19 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         _stopBtn.addActionListener((e) -> stop());
 
         // STEPS
-        _steps = new JSpinner();
+        _steps = new JSpinner(new SpinnerNumberModel(150, 1, 10000, 1));
         _steps.setToolTipText("Simulation steps to execute");
+        _steps.setMaximumSize(new Dimension(80, 40));
+		_steps.setMinimumSize(new Dimension(80, 40));
+		_steps.setPreferredSize(new Dimension(80, 40));
 
         // DELTA TIME
         _deltaTime = new JTextField();
         _deltaTime.setText("2500");
         _deltaTime.setToolTipText("Delta time");
+        _deltaTime.setMaximumSize(new Dimension(80, 40));
+		_deltaTime.setMinimumSize(new Dimension(80, 40));
+		_deltaTime.setPreferredSize(new Dimension(80, 40));
 
         // EXIT BUTTON
         _exitBtn = new JButton();
@@ -197,12 +202,16 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         leftButtons.add(_modifyBtn);
         leftButtons.add(_startBtn);
         leftButtons.add(_stopBtn);
+        leftButtons.add(new JLabel("Steps:"));
         leftButtons.add(_steps);
+        leftButtons.add(new JLabel("Delta-time:"));
         leftButtons.add(_deltaTime);
-        
-        JPanel rightButtons = new JPanel();
-        rightButtons.add(_stopBtn);
 
+        JPanel rightButtons = new JPanel();
+        rightButtons.add(_exitBtn);
+
+        BorderLayout layout = new BorderLayout();
+        this.setLayout(layout);
         this.add(leftButtons, BorderLayout.WEST);
         this.add(rightButtons, BorderLayout.EAST);
     }
@@ -214,7 +223,6 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     // LOAD FILE BUTTON
     private void loadFile() {
         JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir") + "resources/examples");
-        // Im not sure that the previous parameters work, but it should directly open the user folder where the json examples are saved
         
         int ret = fileChooser.showOpenDialog(this);
         if (ret == JFileChooser.APPROVE_OPTION) {
@@ -245,13 +253,12 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
             parentFrame = (JFrame)parentWindow;
         }
         JDialog dialog = new JDialog(parentFrame, "Force Laws Selection");
+        dialog.setSize(1000, 500);
 
         List<JSONObject> lawsInfo = _ctrl.getForceLawsInfo();
         String[] forces = new String[lawsInfo.size()];
-        JSONObject chosenLaw = null;
 
         dialog.setVisible(true);
-
 
         for (int i = 0; i < lawsInfo.size(); i++) {
             forces[i] = lawsInfo.get(i).getString("desc");
@@ -267,6 +274,8 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
         // Table (by default we create a table including the force law with index 0)
         dialog.add(createTable(lawsInfo.get(0)));
+
+        
 
         // OK and Cancel buttons
         JPanel buttonsPanel = new JPanel();
@@ -323,7 +332,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 		});
 		buttonsPanel.add(okButton);
 
-		dialog.add(buttonsPanel);
+		dialog.add(buttonsPanel, BorderLayout.PAGE_END);
 
 
         // comboBox
@@ -333,7 +342,6 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         _selector.addActionListener((e) -> optionChanged(_selector.getSelectedItem().toString(), lawsInfo));
 
         dialog.add(_selector);
-        
     }
 
     // Method called when there is a change in the option chosen in the
@@ -455,6 +463,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         _exitBtn.setEnabled(enableTF);
         _deltaTime.setEnabled(enableTF);
         _steps.setEnabled(enableTF);
+        this.repaint();
     }
 
     // SimulatorObserver methods

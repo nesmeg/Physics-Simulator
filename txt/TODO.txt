@@ -10,10 +10,11 @@ Mark with an X the tasks already done
 
 ERRORES
 [ ] Set size of all windows
-[ ] Place the buttons
+[X] Place the buttons
 [ ] Fix modifyData button
 [ ] Disable all buttons when running
 [ ] Print Bodies
+[ ] Berder Layout East West cambiar
 
 
 Once all of the above are done...

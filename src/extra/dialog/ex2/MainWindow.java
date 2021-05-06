@@ -1,4 +1,4 @@
-//package extra.dialog.ex2;
+package extra.dialog.ex2;
 
 import javax.swing.*;
 
