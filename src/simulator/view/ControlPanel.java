@@ -199,8 +199,12 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
         // Placement of buttons
         JPanel leftButtons = new JPanel();
+        leftButtons.add(createVerticalSeparator());
+        leftButtons.add(createVerticalSeparator());
         leftButtons.add(_loadFileBtn);
+        leftButtons.add(createVerticalSeparator());
         leftButtons.add(_modifyBtn);
+        leftButtons.add(createVerticalSeparator());
         leftButtons.add(_startBtn);
         leftButtons.add(_stopBtn);
         leftButtons.add(new JLabel("Steps:"));
@@ -209,6 +213,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         leftButtons.add(_deltaTime);
 
         JPanel rightButtons = new JPanel();
+        rightButtons.add(createVerticalSeparator());
         rightButtons.add(_exitBtn);
 
         BorderLayout layout = new BorderLayout();
@@ -219,6 +224,12 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     
     // other private/protected methods
     // ...
+
+    static JComponent createVerticalSeparator() {
+        JSeparator x = new JSeparator(SwingConstants.VERTICAL);
+        x.setPreferredSize(new Dimension(3,40));
+        return x;
+    }
 
     // IMPLEMENTATION OF THE BUTTONS FUNCTIONALITY 
     // LOAD FILE BUTTON

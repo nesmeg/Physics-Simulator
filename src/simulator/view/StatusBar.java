@@ -1,11 +1,16 @@
 package simulator.view;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import simulator.control.Controller;
 import simulator.model.Body;
@@ -33,8 +38,24 @@ public class StatusBar extends JPanel implements SimulatorObserver {
 
     private void updateStatusBar() {
         this.add(_currTime);
+        this.add(createVerticalSeparator());
+        this.add(createSpaceSeparator());
 		this.add(_numOfBodies);
+        this.add(createVerticalSeparator());
+        this.add(createSpaceSeparator());
 		this.add(_currLaws);
+    }
+
+    private static JComponent createVerticalSeparator() {
+        JSeparator x = new JSeparator(SwingConstants.VERTICAL);
+        x.setPreferredSize(new Dimension(100,0));
+        return x;
+    }
+
+    private static JComponent createSpaceSeparator() {
+        JSeparator x = new JSeparator(SwingConstants.VERTICAL);
+        x.setPreferredSize(new Dimension(3,20));
+        return x;
     }
 
     // SimulatorObserver methods
