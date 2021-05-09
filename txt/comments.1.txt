@@ -13,3 +13,15 @@ Samir's comments on first assignment to be fixed:
 - in the builders, do not use isEmpty, as if it has the key you expect 
 0 in startBatchMode, if _outFile is not null you should use System.out
     > DONE
+
+
+EXTRA FUNCTIONALITY:
+    1. Allow changing the position of a body by dragging it when the
+    simulation is not running.
+
+    2. Allow changing the color of a body.
+
+    3. Allow adding a body, in a similar way to what we do for changing laws.
+
+    4. Allow deleting a body (open a dialog and ask the user to select a
+   body from a combox box).

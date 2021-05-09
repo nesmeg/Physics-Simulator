@@ -149,6 +149,9 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     }
 
     private void initGUI() {
+        setLayout(new BorderLayout());
+        JToolBar toolBar = new JToolBar();
+        this.add(toolBar, BorderLayout.PAGE_START);
 
         // CREATION, IMAGE, TEXT AND FUNCTION ASSIGNMENT TO THE BUTTONS
         // LOAD FILE BUTTON
@@ -199,8 +202,6 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
         // Placement of buttons
         JPanel leftButtons = new JPanel();
-        leftButtons.add(createVerticalSeparator());
-        leftButtons.add(createVerticalSeparator());
         leftButtons.add(_loadFileBtn);
         leftButtons.add(createVerticalSeparator());
         leftButtons.add(_modifyBtn);
@@ -217,9 +218,9 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         rightButtons.add(_exitBtn);
 
         BorderLayout layout = new BorderLayout();
-        this.setLayout(layout);
-        this.add(leftButtons, BorderLayout.WEST);
-        this.add(rightButtons, BorderLayout.EAST);
+        toolBar.setLayout(layout);
+        toolBar.add(leftButtons, BorderLayout.WEST);
+        toolBar.add(rightButtons, BorderLayout.EAST);
     }
     
     // other private/protected methods
@@ -234,7 +235,8 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     // IMPLEMENTATION OF THE BUTTONS FUNCTIONALITY 
     // LOAD FILE BUTTON
     private void loadFile() {
-        JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir") + "resources/examples");
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File(ControlPanel.class.getResource("./").getPath()));
         
         int ret = fileChooser.showOpenDialog(this);
         if (ret == JFileChooser.APPROVE_OPTION) {
