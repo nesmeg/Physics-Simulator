@@ -53,7 +53,6 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
         JsonTableModel(JSONObject selectedLaw) {
             _selectedLaw = selectedLaw;
-
             if (_selectedLaw.getString("type").equals("nlug"))
                 _data = new String[1][3]; // 1 parameter (G)
             else if (_selectedLaw.getString("type").equals("mtfp"))
@@ -66,13 +65,14 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
         public void initialize() {
             int i = 0;
-            Iterator<String> keys = _selectedLaw.keys(); // keys of the force law to be iterated
+            JSONObject data = _selectedLaw.getJSONObject("data");
+            Iterator<String> keys = data.keys(); // keys of the force law to be iterated
 
             while (keys.hasNext()) {
                 String key = keys.next();
                 _data[i][0] = key; // Key column
                 _data[i][1] = ""; // Value column (initially empty)
-                _data[i][2] = _selectedLaw.getString("desc"); // Description column
+                _data[i][2] = data.getString(key); // Description column
                 i++;
             }
         }
@@ -270,8 +270,6 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         List<JSONObject> lawsInfo = _ctrl.getForceLawsInfo();
         String[] forces = new String[lawsInfo.size()];
 
-        dialog.setVisible(true);
-
         for (int i = 0; i < lawsInfo.size(); i++) {
             forces[i] = lawsInfo.get(i).getString("desc");
         }
@@ -285,8 +283,9 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 		dialog.add(Box.createRigidArea(new Dimension(0, 20)));
 
         // Table (by default we create a table including the force law with index 0)
-        dialog.add(createTable(lawsInfo.get(0)));
-
+        JPanel tablePanel = new JPanel();
+        tablePanel.add(createTable(lawsInfo.get(0)));
+        dialog.add(tablePanel);
         
 
         // OK and Cancel buttons
@@ -348,12 +347,15 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
 
         // comboBox
+        JPanel comboBoxPanel = new JPanel();
         _selectorModel = new DefaultComboBoxModel<>();
         _selector = new JComboBox<String>(forces);
         // identify when the force law is changed
         _selector.addActionListener((e) -> optionChanged(_selector.getSelectedItem().toString(), lawsInfo));
+        comboBoxPanel.add(_selector);
 
-        dialog.add(_selector);
+        dialog.add(comboBoxPanel);
+        dialog.setVisible(true);
     }
 
     // Method called when there is a change in the option chosen in the
