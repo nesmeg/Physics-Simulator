@@ -37,13 +37,15 @@ public class StatusBar extends JPanel implements SimulatorObserver {
     }
 
     private void updateStatusBar() {
-        this.add(_currTime);
-        this.add(createVerticalSeparator());
-        this.add(createSpaceSeparator());
-		this.add(_numOfBodies);
+        this.removeAll(); // clear previous data and separators to repaint new ones
+
+        this.add(_numOfBodies);
         this.add(createVerticalSeparator());
         this.add(createSpaceSeparator());
 		this.add(_currLaws);
+        this.add(createVerticalSeparator());
+        this.add(createSpaceSeparator());
+		this.add(_currTime);
     }
 
     private static JComponent createVerticalSeparator() {
