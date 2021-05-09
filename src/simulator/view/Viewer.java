@@ -139,14 +139,17 @@ public class Viewer extends JComponent implements SimulatorObserver {
             gr.fillOval(_centerX + (int) (x/_scale), _centerY - (int) (y/_scale) , radius * 2, radius * 2);
             gr.drawString(body.getId(), (int) (x / _scale) + _centerX, _centerY - (int) (y/_scale) - 3);
 
+            int bodyCenterX = _centerX + (int) (x/_scale) + radius;
+            int bodyCenterY = _centerY - (int) (y/_scale) + radius;
+
             if (_showVectors) {
-                int vel_x = (int) body.getVelocity().direction().getX();
-                int vel_y = (int) body.getVelocity().direction().getY();
-                drawLineWithArrow(gr, (int) x, (int) y, (int) x + vel_x, (int) y + vel_y, 2, 2, Color.GREEN, Color.GREEN); // GREEN ARROW -> VELOCITY
+                int vel_x = (int) (body.getVelocity().direction().getX() * 25);
+                int vel_y = (int) (body.getVelocity().direction().getY() * 25);
+                drawLineWithArrow(gr, bodyCenterX,  bodyCenterY, bodyCenterX + vel_x, bodyCenterY + vel_y, 2, 2, Color.GREEN, Color.GREEN); // GREEN ARROW -> VELOCITY
                 
-                int force_x = (int) body.getVelocity().direction().getX();
-                int force_y = (int) body.getVelocity().direction().getY();
-                drawLineWithArrow(gr, (int) x, (int) y, (int) x + force_x, (int) y + force_y, 2, 2, Color.RED, Color.RED); // RED ARROW -> FORCE
+                int force_x = (int) (body.getForce().direction().getX() * 25);
+                int force_y = (int) (body.getForce().direction().getY() * 25);
+                drawLineWithArrow(gr, bodyCenterX, bodyCenterY, bodyCenterX + force_x, bodyCenterY + force_y, 2, 2, Color.RED, Color.RED); // RED ARROW -> FORCE
             }
         }
         
