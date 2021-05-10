@@ -3,13 +3,11 @@ package simulator.view;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,7 +18,6 @@ import javax.swing.table.TableColumn;
 
 import org.json.JSONObject;
 
-import netscape.javascript.JSException;
 import simulator.control.Controller;
 import simulator.model.Body;
 import simulator.model.SimulatorObserver;
@@ -281,7 +278,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         // 1. Open dialog box to select the physic law
         JDialog dialog = new JDialog();
         dialog.setTitle("Force Laws Selection");
-        dialog.setSize(1000, 500);
+        dialog.setSize(700, 300);
 
         List<JSONObject> lawsInfo = _ctrl.getForceLawsInfo();
         String[] forces = new String[lawsInfo.size()];
@@ -292,18 +289,37 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
         // initial text
         JPanel textPanel = new JPanel();
-        JLabel text = new JLabel("<html><p>Select a force law and provide values for the parameters in the <b>Value column</b> (default values are used for parameters with no value).</p></html>");
+        textPanel.setLayout(new BorderLayout());
+        JLabel text = new JLabel("<html><p>Select a force law and provide values for the parameters in the <b>Value column</b> (default values are used for <br> parameters with no value).</p></html>");
 
-		text.setAlignmentX(CENTER_ALIGNMENT);
-        textPanel.add(text);
+        textPanel.setPreferredSize(new Dimension(40,50));
+        textPanel.add(text, BorderLayout.WEST);
 		panel.add(textPanel, BorderLayout.PAGE_START);
 
-		panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        JPanel spacePanel = new JPanel();
+		spacePanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        panel.add(spacePanel, BorderLayout.AFTER_LINE_ENDS);
 
         // Table (by default we create a table including the force law with index 0)
         JTable lawsTable = createTable(lawsInfo.get(0));
-        panel.add(new JScrollPane(lawsTable));
+        JScrollPane tablePane = new JScrollPane(lawsTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        tablePane.setPreferredSize(new Dimension(10,100));
+        JPanel tablePanel = new JPanel();
+        tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.PAGE_AXIS));
+        tablePanel.add(tablePane);
+        panel.add(tablePanel, BorderLayout.CENTER);
         
+
+        // comboBox
+        JPanel comboBoxPanel = new JPanel();
+        _selectorModel = new DefaultComboBoxModel<>();
+        _selector = new JComboBox<String>(forces);
+        // identify when the force law is changed
+        _selector.addActionListener((e) -> optionChanged(_selector.getSelectedItem().toString(), lawsInfo));
+        comboBoxPanel.add(_selector);
+
+        //panel.add(comboBoxPanel);
+
 
         // OK and Cancel buttons
         JPanel buttonsPanel = new JPanel();
@@ -360,20 +376,16 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 		});
 		buttonsPanel.add(okButton);
 
-		panel.add(buttonsPanel, BorderLayout.PAGE_END);
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new BorderLayout());
+        bottomPanel.add(comboBoxPanel, BorderLayout.PAGE_START);
+        bottomPanel.add(buttonsPanel, BorderLayout.PAGE_END);
 
+		panel.add(bottomPanel, BorderLayout.PAGE_END);
 
-        // comboBox
-        JPanel comboBoxPanel = new JPanel();
-        _selectorModel = new DefaultComboBoxModel<>();
-        _selector = new JComboBox<String>(forces);
-        // identify when the force law is changed
-        _selector.addActionListener((e) -> optionChanged(_selector.getSelectedItem().toString(), lawsInfo));
-        comboBoxPanel.add(_selector);
-
-        panel.add(comboBoxPanel, BorderLayout.PAGE_END);
 
         dialog.add(panel, BorderLayout.PAGE_START);
+        dialog.setResizable(false);
         dialog.setVisible(true);
     }
 
@@ -410,6 +422,8 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 				return component;
 			}
 		};
+
+        dataTable.setMaximumSize(new Dimension(1000,50));
 
         return dataTable;
     }
