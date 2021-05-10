@@ -9,13 +9,13 @@ Mark with an X the tasks already done
 [X] Finish BodiesTable and BodiesTableModel
 
 ERRORES
-[ ] Set size of all windows
+[X] Set size of all windows
 [X] Place the buttons
 [ ] Fix modifyData button
-[ ] Fix the bouncing of statusBar (with separators)
+[X] Fix the bouncing of statusBar (with separators)
 [X] Disable all buttons when running
 [X] Print Bodies
-[ ] Berder Layout East West cambiar
+[ ] Border Layout East West cambiar
 
 
 Once all of the above are done...
