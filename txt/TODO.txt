@@ -20,3 +20,6 @@ ERRORES
 
 Once all of the above are done...
 [ ] Debug and fix errors
+[ ] Para entregarlo a Samir, borrar:
+        - Carpeta src/extra
+        - txt/TODO.txt y txt/comments.0.txt

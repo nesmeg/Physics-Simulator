@@ -257,6 +257,9 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     //      ////// MODIFY FORCE LAW BUTTON \\\\\\
     private void modifyData() {
 
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+
         // 1. Open dialog box to select the physic law
 
         Window parentWindow = SwingUtilities.windowForComponent(this); 
@@ -279,14 +282,14 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         JLabel text = new JLabel("<html><p>Select a force law and provide values for the parameters in the <b>Value column</b> (default values are used for parameters with no value).</p></html>");
 
 		text.setAlignmentX(CENTER_ALIGNMENT);
-		dialog.add(text);
+		panel.add(text, BorderLayout.PAGE_START);
 
-		dialog.add(Box.createRigidArea(new Dimension(0, 20)));
+		panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         // Table (by default we create a table including the force law with index 0)
         JPanel tablePanel = new JPanel();
         tablePanel.add(createTable(lawsInfo.get(0)));
-        dialog.add(tablePanel);
+        panel.add(tablePanel);
         
 
         // OK and Cancel buttons
@@ -344,7 +347,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 		});
 		buttonsPanel.add(okButton);
 
-		dialog.add(buttonsPanel, BorderLayout.PAGE_END);
+		panel.add(buttonsPanel, BorderLayout.PAGE_END);
 
 
         // comboBox
@@ -355,7 +358,9 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         _selector.addActionListener((e) -> optionChanged(_selector.getSelectedItem().toString(), lawsInfo));
         comboBoxPanel.add(_selector);
 
-        dialog.add(comboBoxPanel);
+        panel.add(comboBoxPanel);
+
+        dialog.add(panel, BorderLayout.PAGE_START);
         dialog.setVisible(true);
     }
 
