@@ -20,6 +20,7 @@ import javax.swing.table.TableColumn;
 
 import org.json.JSONObject;
 
+import netscape.javascript.JSException;
 import simulator.control.Controller;
 import simulator.model.Body;
 import simulator.model.SimulatorObserver;
@@ -261,14 +262,8 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         panel.setLayout(new BorderLayout());
 
         // 1. Open dialog box to select the physic law
-
-        Window parentWindow = SwingUtilities.windowForComponent(this); 
-        // or pass 'this' if you are inside the panel
-        JFrame parentFrame = null;
-        if (parentWindow instanceof JFrame) {
-            parentFrame = (JFrame)parentWindow;
-        }
-        JDialog dialog = new JDialog(parentFrame, "Force Laws Selection");
+        JDialog dialog = new JDialog();
+        dialog.setTitle("Force Laws Selection");
         dialog.setSize(1000, 500);
 
         List<JSONObject> lawsInfo = _ctrl.getForceLawsInfo();
@@ -284,12 +279,11 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 		text.setAlignmentX(CENTER_ALIGNMENT);
 		panel.add(text, BorderLayout.PAGE_START);
 
-		panel.add(Box.createRigidArea(new Dimension(0, 20)));
+		//panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         // Table (by default we create a table including the force law with index 0)
-        JPanel tablePanel = new JPanel();
-        tablePanel.add(createTable(lawsInfo.get(0)));
-        panel.add(tablePanel);
+        JTable lawsTable = createTable(lawsInfo.get(0));
+        panel.add(new JScrollPane(lawsTable));
         
 
         // OK and Cancel buttons
