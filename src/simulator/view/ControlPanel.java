@@ -19,7 +19,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import netscape.javascript.JSException;
 import simulator.control.Controller;
@@ -38,6 +37,8 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     private JButton _exitBtn;
     private JSpinner _steps;
     private JTextField _deltaTime;
+    private JButton _addBtn;
+    private JButton _deleteBtn;
 
     private JsonTableModel _dataTableModel;
     private JTable _dataTable;
@@ -196,6 +197,18 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 		_deltaTime.setMinimumSize(new Dimension(80, 40));
 		_deltaTime.setPreferredSize(new Dimension(80, 40));
 
+        // ADD BODY BUTTON
+        _addBtn = new JButton();
+        _addBtn.setIcon(new ImageIcon("resources/icons/add.png"));
+        _addBtn.setToolTipText("Add a body");
+        _addBtn.addActionListener((e) -> add());
+
+        // DELETE BODY BUTTON
+        _deleteBtn = new JButton();
+        _deleteBtn.setIcon(new ImageIcon("resources/icons/delete.png"));
+        _deleteBtn.setToolTipText("Delete a body from the existing ones");
+        _deleteBtn.addActionListener((e) -> delete());
+
         // EXIT BUTTON
         _exitBtn = new JButton();
         _exitBtn.setIcon(new ImageIcon("resources/icons/exit.png"));
@@ -214,6 +227,9 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         leftButtons.add(_steps);
         leftButtons.add(new JLabel("Delta-time:"));
         leftButtons.add(_deltaTime);
+        leftButtons.add(createVerticalSeparator());
+        leftButtons.add(_addBtn);
+        leftButtons.add(_deleteBtn);
 
         JPanel rightButtons = new JPanel();
         rightButtons.add(createVerticalSeparator());
@@ -427,11 +443,30 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         enableButtonsTF(true);
     }
 
+    // ADD BUTTON
+    private void add() {
+        /*
+        TODO: Allow adding a body, in a similar way to what we do for changing
+        laws. The best is to add a method addBody(JSONObject) to the
+        Controller for this, which calls the factory to create the body and
+        then and then pass it to the simulator.
+        */
+    }
+
+    // DELETE BUTTON
+    private void delete() {
+        /*
+        TODO: Allow deleting a body (open a dialog and ask the user to select a
+        body from a combox box). For this you will have to add
+        delBody(String) to PhysicsSimulator and also the Controller.
+        */
+    }
+
     // EXIT BUTTON
     private void exit() {
         JFrame exit = new JFrame("Exit confirmation");
 
-        int n = JOptionPane.showOptionDialog(exit, "Would you to exit?", "Exit confirmation", 
+        int n = JOptionPane.showOptionDialog(exit, "Would you like to exit?", "Exit confirmation", 
             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 
         if (n == JOptionPane.YES_OPTION) {
