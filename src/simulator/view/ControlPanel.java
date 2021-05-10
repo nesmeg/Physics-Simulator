@@ -19,6 +19,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import netscape.javascript.JSException;
 import simulator.control.Controller;
@@ -274,12 +275,14 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         }
 
         // initial text
+        JPanel textPanel = new JPanel();
         JLabel text = new JLabel("<html><p>Select a force law and provide values for the parameters in the <b>Value column</b> (default values are used for parameters with no value).</p></html>");
 
 		text.setAlignmentX(CENTER_ALIGNMENT);
-		panel.add(text, BorderLayout.PAGE_START);
+        textPanel.add(text);
+		panel.add(textPanel, BorderLayout.PAGE_START);
 
-		//panel.add(Box.createRigidArea(new Dimension(0, 20)));
+		panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         // Table (by default we create a table including the force law with index 0)
         JTable lawsTable = createTable(lawsInfo.get(0));
@@ -352,7 +355,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         _selector.addActionListener((e) -> optionChanged(_selector.getSelectedItem().toString(), lawsInfo));
         comboBoxPanel.add(_selector);
 
-        panel.add(comboBoxPanel);
+        panel.add(comboBoxPanel, BorderLayout.PAGE_END);
 
         dialog.add(panel, BorderLayout.PAGE_START);
         dialog.setVisible(true);
