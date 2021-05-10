@@ -40,6 +40,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     private JsonTableModel _dataTableModel;
     private JTable _dataTable;
     private JDialog _forceLawsDialog;
+    private JPanel _panel;
 
     private JComboBox<String> _selector;
     //private DefaultComboBoxModel<ForceLaws> _selectorModel;
@@ -273,8 +274,8 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     //      ////// MODIFY FORCE LAW BUTTON \\\\\\
     private void modifyData() {
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
+        _panel = new JPanel();
+        _panel.setLayout(new BorderLayout());
 
         // 1. Open dialog box to select the physic law
         JDialog _forceLawsDialog = new JDialog();
@@ -295,20 +296,21 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
         textPanel.setPreferredSize(new Dimension(40,50));
         textPanel.add(text, BorderLayout.WEST);
-		panel.add(textPanel, BorderLayout.PAGE_START);
+		_panel.add(textPanel, BorderLayout.PAGE_START);
 
         JPanel spacePanel = new JPanel();
 		spacePanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        panel.add(spacePanel, BorderLayout.AFTER_LINE_ENDS);
+        _panel.add(spacePanel, BorderLayout.AFTER_LINE_ENDS);
 
         // Table (by default we create a table including the force law with index 0)
-        _dataTable = createTable(lawsInfo.get(0));
-        JScrollPane tablePane = new JScrollPane(_dataTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        tablePane.setPreferredSize(new Dimension(10,100));
-        JPanel tablePanel = new JPanel();
-        tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.PAGE_AXIS));
-        tablePanel.add(tablePane);
-        panel.add(tablePanel, BorderLayout.CENTER);
+        // _dataTable = createTable(lawsInfo.get(0));
+        // updateTable();
+        // JScrollPane tablePane = new JScrollPane(_dataTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        // tablePane.setPreferredSize(new Dimension(10,100));
+        // JPanel tablePanel = new JPanel();
+        // tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.PAGE_AXIS));
+        // tablePanel.add(tablePane);
+        // panel.add(tablePanel, BorderLayout.CENTER);
         
 
         // comboBox
@@ -382,12 +384,28 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         bottomPanel.add(comboBoxPanel, BorderLayout.PAGE_START);
         bottomPanel.add(buttonsPanel, BorderLayout.PAGE_END);
 
-		panel.add(bottomPanel, BorderLayout.PAGE_END);
+		_panel.add(bottomPanel, BorderLayout.PAGE_END);
+
+        _dataTable = createTable(lawsInfo.get(0));
+        updateTable();
 
 
-        _forceLawsDialog.add(panel, BorderLayout.PAGE_START);
+        _forceLawsDialog.add(_panel, BorderLayout.PAGE_START);
         _forceLawsDialog.setResizable(false);
         _forceLawsDialog.setVisible(true);
+    }
+
+
+    private void updateTable() {
+        JScrollPane tablePane = new JScrollPane(_dataTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        tablePane.setPreferredSize(new Dimension(10,100));
+        JPanel tablePanel = new JPanel();
+        tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.PAGE_AXIS));
+        tablePanel.add(tablePane);
+        _panel.add(tablePanel, BorderLayout.CENTER);
+
+
+        //_forceLawsDialog.add(_panel, BorderLayout.CENTER);
     }
 
     // Method called when there is a change in the option chosen in the
@@ -400,6 +418,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
             if (lawsInfo.get(i).getString("desc").equalsIgnoreCase(selectedLaw)) {
                 _dataTable = createTable(lawsInfo.get(i)); // change the _dataTable with new data
                 found = true;
+                updateTable();
             }
             i++;
         }
