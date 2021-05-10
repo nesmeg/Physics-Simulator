@@ -39,9 +39,10 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
     private JsonTableModel _dataTableModel;
     private JTable _dataTable;
+    private JDialog _forceLawsDialog;
 
     private JComboBox<String> _selector;
-    private DefaultComboBoxModel<ForceLaws> _selectorModel;
+    //private DefaultComboBoxModel<ForceLaws> _selectorModel;
 
     // Nested class for the model of the table
     private class JsonTableModel extends AbstractTableModel {
@@ -276,9 +277,9 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         panel.setLayout(new BorderLayout());
 
         // 1. Open dialog box to select the physic law
-        JDialog dialog = new JDialog();
-        dialog.setTitle("Force Laws Selection");
-        dialog.setSize(700, 300);
+        JDialog _forceLawsDialog = new JDialog();
+        _forceLawsDialog.setTitle("Force Laws Selection");
+        _forceLawsDialog.setSize(700, 300);
 
         List<JSONObject> lawsInfo = _ctrl.getForceLawsInfo();
         String[] forces = new String[lawsInfo.size()];
@@ -301,8 +302,8 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         panel.add(spacePanel, BorderLayout.AFTER_LINE_ENDS);
 
         // Table (by default we create a table including the force law with index 0)
-        JTable lawsTable = createTable(lawsInfo.get(0));
-        JScrollPane tablePane = new JScrollPane(lawsTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        _dataTable = createTable(lawsInfo.get(0));
+        JScrollPane tablePane = new JScrollPane(_dataTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         tablePane.setPreferredSize(new Dimension(10,100));
         JPanel tablePanel = new JPanel();
         tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.PAGE_AXIS));
@@ -312,7 +313,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
         // comboBox
         JPanel comboBoxPanel = new JPanel();
-        _selectorModel = new DefaultComboBoxModel<>();
+        //DefaultComboBoxModel<ForceLaws> _selectorModel = new DefaultComboBoxModel<>();
         _selector = new JComboBox<String>(forces);
         // identify when the force law is changed
         _selector.addActionListener((e) -> optionChanged(_selector.getSelectedItem().toString(), lawsInfo));
@@ -331,7 +332,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// do nothing on the controller
-				dialog.setVisible(false);// close the window (dialog) of modifyData
+				_forceLawsDialog.setVisible(false);// close the window (dialog) of modifyData
 			}
 		});
 		buttonsPanel.add(cancelButton);
@@ -370,7 +371,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
                     _ctrl.setForceLaws(newForceLaw); // change the force law in the controller
 
-					dialog.setVisible(false); // close the window (dialog) of modifyData
+					_forceLawsDialog.setVisible(false); // close the window (dialog) of modifyData
 				}
 			}
 		});
@@ -384,9 +385,9 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 		panel.add(bottomPanel, BorderLayout.PAGE_END);
 
 
-        dialog.add(panel, BorderLayout.PAGE_START);
-        dialog.setResizable(false);
-        dialog.setVisible(true);
+        _forceLawsDialog.add(panel, BorderLayout.PAGE_START);
+        _forceLawsDialog.setResizable(false);
+        _forceLawsDialog.setVisible(true);
     }
 
     // Method called when there is a change in the option chosen in the
