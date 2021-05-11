@@ -86,6 +86,13 @@ public class StatusBar extends JPanel implements SimulatorObserver {
 
         updateStatusBar();
     }
+
+    @Override
+    public void onBodyDeleted(List<Body> bodies) {
+        _numOfBodies.setText("Bodies: " + Integer.toString(bodies.size()));
+
+        updateStatusBar();
+    }
     
     @Override
     public void onAdvance(List<Body> bodies, double time) {

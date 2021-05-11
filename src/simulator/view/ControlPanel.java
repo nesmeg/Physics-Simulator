@@ -387,7 +387,9 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 		_forceLawsDialog.setVisible(true);
     
     }
-    // SEGUNDA IMPLEMENTACION - FIN*/
+    // SEGUNDA IMPLEMENTACION - FIN
+
+*/
 
 
     //      ////// MODIFY FORCE LAW BUTTON \\\\\\
@@ -646,8 +648,8 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 		buttonsPanel.setAlignmentX(CENTER_ALIGNMENT);
 		deletePanel.add(buttonsPanel);
 
-        DefaultComboBoxModel<Body> bodiesModel = new DefaultComboBoxModel<>();
-        JComboBox<Body> bodies = new JComboBox<>(bodiesModel);
+        String[] bodyIds = _ctrl.getBodyIds();
+        JComboBox<String> bodies = new JComboBox<>(bodyIds);
 
         comboboxPanel.add(bodies);
 
@@ -667,8 +669,9 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (bodiesModel.getSelectedItem() != null) {
+				if (bodies.getSelectedItem() != null) {
 					// TODO: COMPLETE FUNCTIONALITY
+                    _ctrl.delBody(bodies.getSelectedItem().toString());
 					deleteDialog.setVisible(false);
 				}
 			}
@@ -750,6 +753,9 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     
     @Override
     public void onBodyAdded(List<Body> bodies, Body b) {}
+
+    @Override
+    public void onBodyDeleted(List<Body> bodies) {}
     
     @Override
     public void onAdvance(List<Body> bodies, double time) {}

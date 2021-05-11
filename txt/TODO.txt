@@ -17,6 +17,11 @@ ERRORES
 [X] Print Bodies
 [ ] Border Layout East West cambiar
 
+LO QUE QUEDA
+[ ] Arreglar modifyData
+[ ] Por que el boton the borrar bodies da problemas en los bodies de los extremos? (en el primero y el ultimo)
+[ ] Arreglar el movimiento de los bodies (simetria y que se muevan al mismo punto)
+
 
 Once all of the above are done...
 [ ] Debug and fix errors

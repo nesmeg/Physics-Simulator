@@ -112,4 +112,14 @@ public class Controller {
         forceLaws = _forceLawsFactory.createInstance(info);
         _sim.setForceLaws(forceLaws);
     }
+
+    public String[] getBodyIds(){
+        return _sim.getBodyIds();
+    }
+
+    public void delBody(String bodyId) {
+        System.out.print(bodyId);
+        _sim.delBody(bodyId);
+        
+    }
 }

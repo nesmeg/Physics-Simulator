@@ -74,6 +74,12 @@ public class BodiesTableModel extends AbstractTableModel implements SimulatorObs
         }
 
         @Override
+        public void onBodyDeleted(List<Body> bodies) {
+            _bodies = bodies;
+            fireTableStructureChanged();
+        }
+
+        @Override
         public void onAdvance(List<Body> bodies, double time) {
             _bodies = bodies;
             fireTableStructureChanged();

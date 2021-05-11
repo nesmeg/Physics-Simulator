@@ -2,6 +2,7 @@ package simulator.view;
 
 import java.awt.BorderLayout;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -25,11 +26,13 @@ import simulator.model.SimulatorObserver;
 public class Viewer extends JComponent implements SimulatorObserver {
     // ...
     private int _centerX;
+    private final int _radius = 5;
     private int _centerY;
     private double _scale;
     private List<Body> _bodies;
     private boolean _showHelp;
     private boolean _showVectors;
+    private Body _selectedBody;
     
     Viewer(Controller ctrl) {
         initGUI();
@@ -91,16 +94,41 @@ public class Viewer extends JComponent implements SimulatorObserver {
             }
 
             @Override
-            public void mouseClicked(MouseEvent arg0) {}
+            public void mouseClicked(MouseEvent arg0) {
+                // CHANGE COLOR OF THE BODY
+            }
 
             @Override
 			public void mouseExited(MouseEvent arg0) {}
 
 			@Override
-			public void mousePressed(MouseEvent arg0) {}
+			public void mousePressed(MouseEvent arg0) {
+                _selectedBody = getSelectedBody(arg0.getX(), arg0.getY());
+            }
 
 			@Override
-			public void mouseReleased(MouseEvent arg0) {}
+			public void mouseReleased(MouseEvent arg0) {
+                _selectedBody = null;
+            }
+        });
+
+        addMouseMotionListener(new MouseMotionListener() {
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (_selectedBody != null) {
+                    int x = e.getX();
+                    int y = e.getY();
+                    if (x >= 0 && x <= getWidth() && y >= 0 && y <= getHeight()) {
+                        _selectedBody.setPosition(e.getX(), e.getY());
+                        repaint();
+                    }
+                }
+            }
         });
     }
 
@@ -129,18 +157,17 @@ public class Viewer extends JComponent implements SimulatorObserver {
         }
         
         // 3. draw bodies (with vectors if _showVectors is true)
-        int radius = 5;
 
         for (Body body : _bodies) {
             gr.setColor(Color.BLUE);
             double x = body.getPosition().getX();
             double y = body.getPosition().getY();
 
-            gr.fillOval(_centerX + (int) (x/_scale), _centerY - (int) (y/_scale) , radius * 2, radius * 2);
+            gr.fillOval(_centerX + (int) (x/_scale), _centerY - (int) (y/_scale) , _radius * 2, _radius * 2);
             gr.drawString(body.getId(), (int) (x / _scale) + _centerX, _centerY - (int) (y/_scale) - 3);
 
-            int bodyCenterX = _centerX + (int) (x/_scale) + radius;
-            int bodyCenterY = _centerY - (int) (y/_scale) + radius;
+            int bodyCenterX = _centerX + (int) (x/_scale) + _radius;
+            int bodyCenterY = _centerY - (int) (y/_scale) + _radius;
 
             if (_showVectors) {
                 int vel_x = (int) (body.getVelocity().direction().getX() * 25);
@@ -207,6 +234,17 @@ public class Viewer extends JComponent implements SimulatorObserver {
     }
 
 
+    protected Body getSelectedBody(int x, int y) {
+        // get the body clicked by the mouse in case that the click is inside a body
+        for (Body b : _bodies) {
+            if (Math.sqrt(Math.pow(x - _centerX + (int) (b.getPosition().getX()/_scale) + _radius , 2) 
+                + Math.pow(y - _centerY + (int) (b.getPosition().getY()/_scale) + _radius, 2)) <= _radius * 4) {
+                return b;
+			}
+		}
+		return null;
+	}
+
     // SimulatorObserver methods
     // ...
     @Override
@@ -225,6 +263,13 @@ public class Viewer extends JComponent implements SimulatorObserver {
     
     @Override
     public void onBodyAdded(List<Body> bodies, Body b) {
+        _bodies = bodies;
+        autoScale();
+        repaint();
+    }
+
+    @Override
+    public void onBodyDeleted(List<Body> bodies) {
         _bodies = bodies;
         autoScale();
         repaint();

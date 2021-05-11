@@ -125,4 +125,24 @@ public class PhysicsSimulator {
             o.onRegister(_bodies, _current_time, _dt, _forceLaws.toString());
         }
     }
+
+    public String[] getBodyIds() {
+        String[] bodyIds = new String[_bodies.size()];
+        
+        for (int i = 0; i < bodyIds.length; i++) {
+            bodyIds[i] = _bodies.get(i).getId();
+        }
+        return bodyIds;
+    }
+
+    public void delBody(String bodyId) {
+        for (Body body : _bodies) {
+            if (bodyId.equals(body.getId())) {
+                _bodies.remove(body);
+            }
+        }
+        for (SimulatorObserver observer : _observers) {
+            observer.onBodyDeleted(_bodies);
+        }
+    }
 }

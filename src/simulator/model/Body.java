@@ -39,6 +39,10 @@ public class Body {
         return _mass;
     }
 
+    public void setPosition(int X, int Y){
+        _v_pos = new Vector2D(X, Y);
+    }
+
     void addForce(Vector2D f) {
         _v_force = _v_force.plus(f);
     }
