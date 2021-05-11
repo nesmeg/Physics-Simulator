@@ -12,9 +12,12 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
+import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.border.TitledBorder;
 
@@ -33,10 +36,13 @@ public class Viewer extends JComponent implements SimulatorObserver {
     private boolean _showHelp;
     private boolean _showVectors;
     private Body _selectedBody;
+    private JColorChooser _chooser;
+    private Map<Body, Color> _map;
     
     Viewer(Controller ctrl) {
         initGUI();
         ctrl.addObserver(this);
+        _map = new HashMap<Body, Color>();
     }
 
     private void initGUI() {
@@ -50,6 +56,7 @@ public class Viewer extends JComponent implements SimulatorObserver {
         _scale = 1.0;
         _showHelp = true;
         _showVectors = true;
+        _chooser = new JColorChooser();
         addKeyListener(new KeyListener() {
             // ...
             @Override
@@ -96,6 +103,16 @@ public class Viewer extends JComponent implements SimulatorObserver {
             @Override
             public void mouseClicked(MouseEvent arg0) {
                 // CHANGE COLOR OF THE BODY
+                if (arg0.getClickCount() > 0) {
+                    Body b = getSelectedBody(arg0.getX(), arg0.getY());
+                    if (b != null) {
+                        Color c = _chooser.showDialog(null, "Select the color for the body", Color.BLUE);
+                        if (c != null) {
+                            _map.put(b, c);
+                        }
+                        repaint();
+                    } 
+                }
             }
 
             @Override
@@ -123,8 +140,13 @@ public class Viewer extends JComponent implements SimulatorObserver {
                 if (_selectedBody != null) {
                     int x = e.getX();
                     int y = e.getY();
+                    int newX;
+                    int newY;
                     if (x >= 0 && x <= getWidth() && y >= 0 && y <= getHeight()) {
-                        _selectedBody.setPosition(e.getX(), e.getY());
+                        newX = (int) ((x - _centerX - _radius) * _scale);
+                        newY = (int) ((y - _centerX - _radius) * _scale);
+                        System.out.println(x + "\n" + _scale + "\n" + newX);
+                        _selectedBody.setPosition(newX, newY);
                         repaint();
                     }
                 }
@@ -159,7 +181,7 @@ public class Viewer extends JComponent implements SimulatorObserver {
         // 3. draw bodies (with vectors if _showVectors is true)
 
         for (Body body : _bodies) {
-            gr.setColor(Color.BLUE);
+            gr.setColor(_map.get(body));
             double x = body.getPosition().getX();
             double y = body.getPosition().getY();
 
@@ -237,7 +259,7 @@ public class Viewer extends JComponent implements SimulatorObserver {
     protected Body getSelectedBody(int x, int y) {
         // get the body clicked by the mouse in case that the click is inside a body
         for (Body b : _bodies) {
-            if (Math.sqrt(Math.pow(x - _centerX + (int) (b.getPosition().getX()/_scale) + _radius , 2) 
+            if (Math.sqrt(Math.pow(x - _centerX - (int) (b.getPosition().getX()/_scale) + _radius , 2) 
                 + Math.pow(y - _centerY + (int) (b.getPosition().getY()/_scale) + _radius, 2)) <= _radius * 4) {
                 return b;
 			}
