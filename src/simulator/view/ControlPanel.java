@@ -271,6 +271,125 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         
     }
 
+
+    private void openDialog() {
+        _forceLawsDialog.setVisible(true);
+    }
+
+/*
+    // SEGUNDA IMPLEMENTACION - INICIO
+    private void modifyData() {
+        _forceLawsDialog.removeAll();
+
+        List<JSONObject> lawsInfo = _ctrl.getForceLawsInfo();
+        String[] forces = new String[lawsInfo.size()];
+
+        for (int i = 0; i < lawsInfo.size(); i++) {
+            forces[i] = lawsInfo.get(i).getString("desc");
+        }
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+		_forceLawsDialog.setContentPane(mainPanel);
+
+        JLabel initialText = new JLabel("<html><p>Select a force law and provide values for the parameters in the <b>Value column</b> (default values are used for <br> parameters with no value).</p></html>");
+		initialText.setAlignmentX(CENTER_ALIGNMENT);
+
+        mainPanel.add(initialText);
+
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        JPanel tablePanel = new JPanel();
+		tablePanel.setAlignmentX(CENTER_ALIGNMENT);
+		mainPanel.add(tablePanel);
+
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        JPanel comboboxPanel = new JPanel();
+		comboboxPanel.setAlignmentX(CENTER_ALIGNMENT);
+		mainPanel.add(comboboxPanel);
+
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        JPanel buttonsPanel = new JPanel();
+		buttonsPanel.setAlignmentX(CENTER_ALIGNMENT);
+		mainPanel.add(buttonsPanel);
+
+        // TABLE
+        JScrollPane tablePane = new JScrollPane(_dataTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        tablePane.setPreferredSize(new Dimension(10,100));
+        _dataTable = createTable(lawsInfo.get(0));
+        updateTable();
+
+        // COMBO BOX
+        DefaultComboBoxModel<String> selectorModel = new DefaultComboBoxModel<>();
+        JComboBox<String> selector = new JComboBox<String>(forces);
+        // identify when the force law is changed
+        selector.addActionListener((e) -> optionChanged(selectorModel.getSelectedItem().toString(), lawsInfo));
+        comboboxPanel.add(selector);
+
+
+        // BUTTONS
+        JButton cancelButton = new JButton("Cancel");
+		cancelButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// do nothing on the controller
+				_forceLawsDialog.setVisible(false);// close the window (dialog) of modifyData
+			}
+		});
+		buttonsPanel.add(cancelButton);
+
+        JButton okButton = new JButton("OK");
+		okButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (selectorModel.getSelectedItem() != null) {
+
+					// if we press OK, we have to change the controller:
+                    int i = 0;
+                    boolean found = false;
+                    JSONObject selectedLaw = new JSONObject();
+
+                    // know which law we have selected from the array of strings that the comboBox has:
+                    while (i < lawsInfo.size() && !found ) {
+                        if (lawsInfo.get(i).getString("desc").equalsIgnoreCase(_selector.getSelectedItem().toString())) {
+                            selectedLaw = lawsInfo.get(i);
+                            found = true;
+                        }
+                        i++;
+                    }
+
+                    Iterator<String> keys = selectedLaw.keys(); // keys of the force law to be iterated
+                    JSONObject newForceLaw = new JSONObject();
+                    i = 0;
+
+                    while (keys.hasNext()) {
+                        newForceLaw.put(keys.next(), _dataTable.getValueAt(i, 1));
+                        // we take the value of the cell (i,1) because row i is the key we are looking
+                        // for and column 1 always contains the value of that key
+                        i++;
+                    }
+
+                    _ctrl.setForceLaws(newForceLaw); // change the force law in the controller
+
+					_forceLawsDialog.setVisible(false); // close the window (dialog) of modifyData
+				}
+			}
+		});
+		buttonsPanel.add(okButton);
+
+        
+        _forceLawsDialog.setPreferredSize(new Dimension(1000, 700));
+		_forceLawsDialog.pack();
+		_forceLawsDialog.setVisible(true);
+    
+    }
+    // SEGUNDA IMPLEMENTACION - FIN*/
+
+
     //      ////// MODIFY FORCE LAW BUTTON \\\\\\
     private void modifyData() {
 
@@ -395,7 +514,17 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         _forceLawsDialog.setVisible(true);
     }
 
+    /*
+    // SEGUNDA IMPLEMENTACION
+    private void updateTable() {
+        _dataTable = createTable(selectedLaw)
 
+
+        //_forceLawsDialog.add(_panel, BorderLayout.CENTER);
+    }
+    // SEGUNDA IMPLEMENTACION*/
+
+    
     private void updateTable() {
         JScrollPane tablePane = new JScrollPane(_dataTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         tablePane.setPreferredSize(new Dimension(10,100));
@@ -494,6 +623,63 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         body from a combox box). For this you will have to add
         delBody(String) to PhysicsSimulator and also the Controller.
         */
+        JDialog deleteDialog = new JDialog();
+        deleteDialog.setTitle("Delete body");
+        JPanel deletePanel = new JPanel();
+        deletePanel.setLayout(new BoxLayout(deletePanel, BoxLayout.Y_AXIS));
+		deleteDialog.setContentPane(deletePanel);
+
+        JLabel message = new JLabel("Select a body to be deleted");
+        message.setAlignmentX(CENTER_ALIGNMENT);
+
+        deletePanel.add(message);
+
+        deletePanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        JPanel comboboxPanel = new JPanel();
+        comboboxPanel.setAlignmentX(CENTER_ALIGNMENT);
+        deletePanel.add(comboboxPanel);
+
+        deletePanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        JPanel buttonsPanel = new JPanel();
+		buttonsPanel.setAlignmentX(CENTER_ALIGNMENT);
+		deletePanel.add(buttonsPanel);
+
+        DefaultComboBoxModel<Body> bodiesModel = new DefaultComboBoxModel<>();
+        JComboBox<Body> bodies = new JComboBox<>(bodiesModel);
+
+        comboboxPanel.add(bodies);
+
+        JButton cancelButton = new JButton("Cancel");
+		cancelButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+                // do nothing
+				deleteDialog.setVisible(false);
+			}
+		});
+		buttonsPanel.add(cancelButton);
+
+        JButton okButton = new JButton("OK");
+		okButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (bodiesModel.getSelectedItem() != null) {
+					// TODO: COMPLETE FUNCTIONALITY
+					deleteDialog.setVisible(false);
+				}
+			}
+		});
+		buttonsPanel.add(okButton);
+
+
+        deleteDialog.setPreferredSize(new Dimension(500, 200));
+		deleteDialog.pack();
+		deleteDialog.setResizable(false);
+		deleteDialog.setVisible(true);
     }
 
     // EXIT BUTTON

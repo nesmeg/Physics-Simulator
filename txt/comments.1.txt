@@ -24,4 +24,4 @@ EXTRA FUNCTIONALITY:
     3. Allow adding a body, in a similar way to what we do for changing laws.
 
     4. Allow deleting a body (open a dialog and ask the user to select a
-   body from a combox box).
+    body from a combox box).
