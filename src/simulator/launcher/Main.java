@@ -335,10 +335,9 @@ public class Main {
 
 	private static void startGUIMode() throws FileNotFoundException, InvocationTargetException, InterruptedException {
 		ColorTheme colorTheme = new ColorTheme();
-		colorTheme.getTheme();
 		if (colorTheme.getTheme() == 1) { // dark theme
-			UIManager.put( "control", new Color( 128, 128, 128) );
-			UIManager.put( "info", new Color(128,128,128) );
+			UIManager.put( "control", new Color( 100, 100, 100) );
+			UIManager.put( "info", new Color(128, 128, 128) );
 			UIManager.put( "nimbusBase", new Color( 18, 30, 49) );
 			UIManager.put( "nimbusAlertYellow", new Color( 248, 187, 0) );
 			UIManager.put( "nimbusDisabledText", new Color( 128, 128, 128) );
