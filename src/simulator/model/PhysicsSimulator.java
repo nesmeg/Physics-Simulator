@@ -139,10 +139,10 @@ public class PhysicsSimulator {
         for (Body body : _bodies) {
             if (bodyId.equals(body.getId())) {
                 _bodies.remove(body);
+                for (SimulatorObserver observer : _observers) {
+                    observer.onBodyDeleted(_bodies);
+                }
             }
-        }
-        for (SimulatorObserver observer : _observers) {
-            observer.onBodyDeleted(_bodies);
         }
     }
 }

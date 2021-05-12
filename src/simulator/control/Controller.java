@@ -118,8 +118,6 @@ public class Controller {
     }
 
     public void delBody(String bodyId) {
-        System.out.print(bodyId);
         _sim.delBody(bodyId);
-        
     }
 }

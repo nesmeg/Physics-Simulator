@@ -145,7 +145,6 @@ public class Viewer extends JComponent implements SimulatorObserver {
                     if (x >= 0 && x <= getWidth() && y >= 0 && y <= getHeight()) {
                         newX = (x - _centerX - _radius) * _scale;
                         newY = (y - _centerY - _radius) * -_scale;
-                        System.out.println(x + "\n" + _scale + "\n" + newX);
                         _selectedBody.setPosition(newX, newY);
                         repaint();
                     }
