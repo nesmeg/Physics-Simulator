@@ -39,7 +39,7 @@ public class Body {
         return _mass;
     }
 
-    public void setPosition(int X, int Y){
+    public void setPosition(double X, double Y){
         _v_pos = new Vector2D(X, Y);
     }
 
