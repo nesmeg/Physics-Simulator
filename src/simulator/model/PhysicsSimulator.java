@@ -142,6 +142,7 @@ public class PhysicsSimulator {
                 for (SimulatorObserver observer : _observers) {
                     observer.onBodyDeleted(_bodies);
                 }
+                break;
             }
         }
     }

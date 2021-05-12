@@ -670,7 +670,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (bodies.getSelectedItem() != null) {
-					// TODO: COMPLETE FUNCTIONALITY
+					// delete selected body from the simulation
                     _ctrl.delBody(bodies.getSelectedItem().toString());
 					deleteDialog.setVisible(false);
 				}
