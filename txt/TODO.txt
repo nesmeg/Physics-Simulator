@@ -15,12 +15,14 @@ ERRORES
 [X] Fix the bouncing of statusBar (with separators)
 [X] Disable all buttons when running
 [X] Print Bodies
-[ ] Border Layout East West cambiar
+[X] Border Layout East West cambiar
 
 LO QUE QUEDA
 [ ] Arreglar modifyData
 [X] Por que el boton the borrar bodies da problemas en los bodies de los extremos? (en el primero y el ultimo)
 [X] Arreglar el movimiento de los bodies (simetria y que se muevan al mismo punto)
+[ ] Como desactivar las opciones de mover y cambiar de color los bodies cuando se estan moviendo
+        Nuestra idea: crear otro observer que sea onStopped y que viewer sepa cuando esta parado y cuando moviendose
 
 
 Once all of the above are done...
