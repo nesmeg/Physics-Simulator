@@ -465,7 +465,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         // Disable all buttons except the stop one and set the value of stopped to false
         enableButtonsTF(false);
         _stopped = false;
-
+        
         try {
             // Set delta time to the one specified in the text field
             double new_dt = Double.parseDouble(_deltaTime.getText()); // get the text from the text field and parse it
@@ -500,11 +500,6 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
     // DELETE BUTTON
     private void delete() {
-        /*
-         * TODO: Allow deleting a body (open a dialog and ask the user to select a body
-         * from a combox box). For this you will have to add delBody(String) to
-         * PhysicsSimulator and also the Controller.
-         */
         JDialog deleteDialog = new JDialog();
         deleteDialog.setTitle("Delete body");
         JPanel deletePanel = new JPanel();
@@ -649,4 +644,10 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     @Override
     public void onForceLawsChanged(String fLawsDesc) {
     }
+
+    @Override
+    public void onStart() {}
+
+    @Override
+    public void onStop() {}
 }

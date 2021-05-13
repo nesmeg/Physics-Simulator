@@ -90,5 +90,11 @@ public class BodiesTableModel extends AbstractTableModel implements SimulatorObs
 
         @Override
         public void onForceLawsChanged(String fLawsDesc) {}
+
+        @Override
+        public void onStart() {}
+        
+        @Override
+        public void onStop() {}
 }
 

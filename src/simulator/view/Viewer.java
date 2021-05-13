@@ -35,6 +35,7 @@ public class Viewer extends JComponent implements SimulatorObserver {
     private List<Body> _bodies;
     private boolean _showHelp;
     private boolean _showVectors;
+    private boolean _isRunning;
     private Body _selectedBody;
     private JColorChooser _chooser;
     private Map<Body, Color> _map;
@@ -56,6 +57,7 @@ public class Viewer extends JComponent implements SimulatorObserver {
         _scale = 1.0;
         _showHelp = true;
         _showVectors = true;
+        _isRunning = false;
         _chooser = new JColorChooser();
         addKeyListener(new KeyListener() {
             // ...
@@ -103,7 +105,7 @@ public class Viewer extends JComponent implements SimulatorObserver {
             @Override
             public void mouseClicked(MouseEvent arg0) {
                 // CHANGE COLOR OF THE BODY
-                if (arg0.getClickCount() > 0) {
+                if (arg0.getClickCount() > 0 && _isRunning) {
                     Body b = getSelectedBody(arg0.getX(), arg0.getY());
                     if (b != null) {
                         Color c = _chooser.showDialog(null, "Select the color for the body", Color.BLUE);
@@ -137,7 +139,7 @@ public class Viewer extends JComponent implements SimulatorObserver {
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (_selectedBody != null) {
+                if (_selectedBody != null && _isRunning) {
                     int x = e.getX();
                     int y = e.getY();
                     double newX;
@@ -306,5 +308,15 @@ public class Viewer extends JComponent implements SimulatorObserver {
     
     @Override
     public void onForceLawsChanged(String fLawsDesc) {}
+
+    @Override
+    public void onStart() {
+        _isRunning = true;
+    }
+
+    @Override
+    public void onStop() {
+        _isRunning = false;
+    }
 
 }

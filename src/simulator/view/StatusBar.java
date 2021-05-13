@@ -112,4 +112,10 @@ public class StatusBar extends JPanel implements SimulatorObserver {
 
         updateStatusBar();
     }
+
+    @Override
+    public void onStart() {}
+
+    @Override
+    public void onStop() {}
 }
