@@ -16,6 +16,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import simulator.control.Controller;
@@ -189,9 +190,9 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
             
             // COMBO BOX
             DefaultComboBoxModel<String> selectorModel = new DefaultComboBoxModel<>();
-            JComboBox<String> selector = new JComboBox<String>(forces); 
+            JComboBox<String> selector = new JComboBox<>(forces); 
             // identify when the force law is changed
-            selector.addActionListener((e) -> optionChanged(selectorModel.getSelectedItem().toString()));
+            selector.addActionListener((e) -> optionChanged(selector.getSelectedItem().toString()));
             comboBoxPanel.add(selector);
 
 
@@ -216,28 +217,38 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
             okButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (selectorModel.getSelectedItem() != null) {
+                    if (selector.getSelectedItem() != null) {
                         // if we press OK, we have to change the controller:
                         int i = 0;
                         boolean found = false;
                         JSONObject selectedLaw = new JSONObject();
                         // know which law we have selected from the array of strings that the comboBox has:
                         while (i < _lawsInfo.size() && !found ) {
-                            if (_lawsInfo.get(i).getString("desc").equalsIgnoreCase(_selector.getSelectedItem().toString())) {
+                            if (_lawsInfo.get(i).getString("desc").equalsIgnoreCase(selector.getSelectedItem().toString())) {
                                 selectedLaw = _lawsInfo.get(i);
                                 found = true;
                             }
                             i++;
                         }
-                        Iterator<String> keys = selectedLaw.keys(); // keys of the force law to be iterated
                         JSONObject newForceLaw = new JSONObject();
+                        JSONObject newForceLawData = new JSONObject();
+                        newForceLaw.put("type", selectedLaw.getString("type"));
+
                         i = 0;
+                        JSONObject dataKeys = selectedLaw.getJSONObject("data");
+                        Iterator<String> keys = dataKeys.keys(); // keys of the force law to be iterated
                         while (keys.hasNext()) {
-                            newForceLaw.put(keys.next(), _dataTable.getValueAt(i, 1));
+                            newForceLawData.put(keys.next(), _dataTableModel.getValueAt(i, 1));
                             // we take the value of the cell (i,1) because row i is the key we are looking
                             // for and column 1 always contains the value of that key
                             i++;
                         }
+                        if (newForceLaw.getString("type").equals("mtfp")){
+                            JSONArray jarray = new JSONArray(newForceLawData.getString("c"));
+                            newForceLawData.remove("c");
+                            newForceLawData.put("c", jarray);
+                        }
+                        newForceLaw.put("data", newForceLawData);
                         _ctrl.setForceLaws(newForceLaw); // change the force law in the controller
                         _modifyDataDialog.setVisible(false); // close the window (dialog) of modifyData
                     }
@@ -255,14 +266,16 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         }
 
         private void updateDialog() {
-            //_mainPanel.removeAll();
+            _mainPanel.removeAll();
 
             _mainPanel.add(_topPanel, BorderLayout.PAGE_START);
             _mainPanel.add(_centerPanel, BorderLayout.CENTER);
             _mainPanel.add(_bottomPanel, BorderLayout.PAGE_END);
+            this.setContentPane(_mainPanel);
         }
 
         private void optionChanged(String law) {
+            
             JSONObject selectedLaw = null;
             
             for (JSONObject forceLaw : _lawsInfo) {
@@ -274,6 +287,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
             _centerPanel = createCenterPanel(selectedLaw);
             updateDialog();
+            
         }
 
         private JPanel createCenterPanel(JSONObject law) {
@@ -320,6 +334,8 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         initGUI();
         _modifyDataDialog = new ModifyDataDialog();
         _modifyDataDialog.setVisible(false);
+        _modifyDataDialog.setAlwaysOnTop(true);
+        _modifyDataDialog.setResizable(false);
         _ctrl.addObserver(this);
     }
 
