@@ -36,117 +36,290 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     private JTextField _deltaTime;
     private JButton _addBtn;
     private JButton _deleteBtn;
+    private JDialog _modifyDataDialog;
 
-    private JsonTableModel _dataTableModel;
-    private JTable _dataTable;
-    private JDialog _forceLawsDialog;
-    private JPanel _panel;
 
-    private JComboBox<String> _selector;
-    //private DefaultComboBoxModel<ForceLaws> _selectorModel;
+    private class ModifyDataDialog extends JDialog {
+        private JsonTableModel _dataTableModel;
+        private JTable _dataTable;
+        private JPanel _mainPanel;
+        private JPanel _topPanel;
+        private JPanel _centerPanel;
+        private JPanel _bottomPanel;
+        private JComboBox<String> _selector;
+        // private DefaultComboBoxModel<ForceLaws> _selectorModel;
+        private List<JSONObject> _lawsInfo;
+        
+        // Nested class for the model of the modifyData table 
+        private class JsonTableModel extends AbstractTableModel {
+            private static final long serialVersionUID = 1L;
 
-    // Nested class for the model of the table
-    private class JsonTableModel extends AbstractTableModel {
-        private static final long serialVersionUID = 1L;
+            private String[] _header = { "Key", "Value", "Description" };
+            String[][] _data;
+            private JSONObject _selectedLaw;
 
-		private String[] _header = { "Key", "Value", "Description" };
-		String[][] _data;
-        private JSONObject _selectedLaw;
+            JsonTableModel(JSONObject selectedLaw) {
+                _selectedLaw = selectedLaw;
+                if (_selectedLaw.getString("type").equals("nlug"))
+                    _data = new String[1][3]; // 1 parameter (G)
+                else if (_selectedLaw.getString("type").equals("mtfp"))
+                    _data = new String[2][3]; // 2 parameters (c, g)
+                else if (_selectedLaw.getString("type").equals("ng"))
+                    _data = new String[0][3]; // 0 parameters
 
-        JsonTableModel(JSONObject selectedLaw) {
-            _selectedLaw = selectedLaw;
-            if (_selectedLaw.getString("type").equals("nlug"))
-                _data = new String[1][3]; // 1 parameter (G)
-            else if (_selectedLaw.getString("type").equals("mtfp"))
-                _data = new String[2][3]; // 2 parameters (c, g)
-            else if (_selectedLaw.getString("type").equals("ng"))
-                _data = new String[0][3]; // 0 parameters
+                initialize();
+            }
 
-            initialize();
-		}
+            public void initialize() {
+                int i = 0;
+                JSONObject data = _selectedLaw.getJSONObject("data");
+                Iterator<String> keys = data.keys(); // keys of the force law to be iterated
 
-        public void initialize() {
-            int i = 0;
-            JSONObject data = _selectedLaw.getJSONObject("data");
-            Iterator<String> keys = data.keys(); // keys of the force law to be iterated
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    _data[i][0] = key; // Key column
+                    _data[i][1] = ""; // Value column (initially empty)
+                    _data[i][2] = data.getString(key); // Description column
+                    i++;
+                }
+            }
 
-            while (keys.hasNext()) {
-                String key = keys.next();
-                _data[i][0] = key; // Key column
-                _data[i][1] = ""; // Value column (initially empty)
-                _data[i][2] = data.getString(key); // Description column
-                i++;
+            @Override
+            public String getColumnName(int column) {
+                return _header[column];
+            }
+
+            @Override
+            public int getRowCount() {
+                return _data.length;
+            }
+
+            @Override
+            public int getColumnCount() {
+                return _header.length;
+            }
+
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                if (getColumnName(columnIndex).equals("Value"))
+                    return true;
+                return false;
+            }
+
+            @Override
+            public Object getValueAt(int rowIndex, int columnIndex) {
+                return _data[rowIndex][columnIndex];
+            }
+
+            @Override
+            public void setValueAt(Object o, int rowIndex, int columnIndex) {
+                _data[rowIndex][columnIndex] = o.toString();
+            }
+
+            // Method getData() returns a String corresponding to a JSON structure
+            // with column 1 as keys and column 2 as values.
+
+            // This method return the coIt is important to build it as a string, if
+            // we create a corresponding JSONObject and use put(key,value), all values
+            // will be added as string. This also means that if users want to add a
+            // string value they should add the quotes as well as part of the
+            // value (2nd column).
+            //
+            public String getData() {
+                StringBuilder s = new StringBuilder();
+                s.append('{');
+                for (int i = 0; i < _data.length; i++) {
+                    if (!_data[i][0].isEmpty() && !_data[i][1].isEmpty()) {
+                        s.append('"');
+                        s.append(_data[i][0]);
+                        s.append('"');
+                        s.append(':');
+                        s.append(_data[i][1]);
+                        s.append(',');
+                    }
+                }
+
+                if (s.length() > 1)
+                    s.deleteCharAt(s.length() - 1);
+                s.append('}');
+
+                return s.toString();
             }
         }
 
-        @Override
-		public String getColumnName(int column) {
-			return _header[column];
-		}
+        ModifyDataDialog() {
+            _lawsInfo = _ctrl.getForceLawsInfo();
+            initDialog();
+        }
 
-		@Override
-		public int getRowCount() {
-			return _data.length;
-		}
+        void initDialog(){
 
-		@Override
-		public int getColumnCount() {
-			return _header.length;
-		}
+            String[] forces = new String[_lawsInfo.size()];
 
-		@Override
-		public boolean isCellEditable(int rowIndex, int columnIndex) {
-            if (getColumnName(columnIndex).equals("Value")) 
-                return true;
-			return false;
-		}
+            for (int i = 0; i < _lawsInfo.size(); i++) {
+                forces[i] = _lawsInfo.get(i).getString("desc");
+            }
+            
+            _mainPanel = new JPanel(); 
+            _mainPanel.setLayout(new BorderLayout());
+            this.setContentPane(_mainPanel);
 
-		@Override
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			return _data[rowIndex][columnIndex];
-		}
+            //-----------------------------TOP PANEL---------------------------------\\
+            _topPanel = new JPanel();
+            _topPanel.setPreferredSize(new Dimension(1000, 30));
+            _topPanel.setLayout(new BorderLayout());
+        
+            JLabel initialText = new JLabel("<html><p>Select a force law and provide values for the parameters in the <b>Value column</b> (default values are used for <br> parameters with no value).</p></html>");
+            initialText.setAlignmentX(CENTER_ALIGNMENT);
 
-		@Override
-		public void setValueAt(Object o, int rowIndex, int columnIndex) {
-			_data[rowIndex][columnIndex] = o.toString();
-		}
+            _topPanel.add(initialText, BorderLayout.PAGE_START);
 
-		// Method getData() returns a String corresponding to a JSON structure
-		// with column 1 as keys and column 2 as values.
+            //-----------------------------CENTER PANEL------------------------------------\\
+            _centerPanel = createCenterPanel(_lawsInfo.get(0));
+            
+            
+            //-------------------------BOTTOM PANEL-----------------------------------------\\
+            _bottomPanel = new JPanel();
+            _bottomPanel.setLayout(new BorderLayout());
+            
+            // COMBOBOX PANEL
+            JPanel comboBoxPanel = new JPanel();
+            comboBoxPanel.setPreferredSize(new Dimension(1000, 30));
+            comboBoxPanel.setAlignmentX(CENTER_ALIGNMENT); 
+            
+            // COMBO BOX
+            DefaultComboBoxModel<String> selectorModel = new DefaultComboBoxModel<>();
+            JComboBox<String> selector = new JComboBox<String>(forces); 
+            // identify when the force law is changed
+            selector.addActionListener((e) -> optionChanged(selectorModel.getSelectedItem().toString()));
+            comboBoxPanel.add(selector);
 
-		// This method return the coIt is important to build it as a string, if
-		// we create a corresponding JSONObject and use put(key,value), all values
-		// will be added as string. This also means that if users want to add a
-		// string value they should add the quotes as well as part of the
-		// value (2nd column).
-		//
-		public String getData() {
-			StringBuilder s = new StringBuilder();
-			s.append('{');
-			for (int i = 0; i < _data.length; i++) {
-				if (!_data[i][0].isEmpty() && !_data[i][1].isEmpty()) {
-					s.append('"');
-					s.append(_data[i][0]);
-					s.append('"');
-					s.append(':');
-					s.append(_data[i][1]);
-					s.append(',');
-				}
-			}
 
-			if (s.length() > 1)
-				s.deleteCharAt(s.length() - 1);
-			s.append('}');
+            // BUTTONS PANEL
+            JPanel buttonsPanel = new JPanel();
+            comboBoxPanel.setPreferredSize(new Dimension(1000, 30));
+		    buttonsPanel.setAlignmentX(CENTER_ALIGNMENT);
 
-			return s.toString();
-		}
+             // BUTTONS
+            JButton cancelButton = new JButton("Cancel");
+            cancelButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // do nothing on the controller
+                    _modifyDataDialog.setVisible(false);// close the window (dialog) of modifyData
+                }
+            });
+
+            buttonsPanel.add(cancelButton);
+
+            JButton okButton = new JButton("OK");
+            okButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (selectorModel.getSelectedItem() != null) {
+                        // if we press OK, we have to change the controller:
+                        int i = 0;
+                        boolean found = false;
+                        JSONObject selectedLaw = new JSONObject();
+                        // know which law we have selected from the array of strings that the comboBox has:
+                        while (i < _lawsInfo.size() && !found ) {
+                            if (_lawsInfo.get(i).getString("desc").equalsIgnoreCase(_selector.getSelectedItem().toString())) {
+                                selectedLaw = _lawsInfo.get(i);
+                                found = true;
+                            }
+                            i++;
+                        }
+                        Iterator<String> keys = selectedLaw.keys(); // keys of the force law to be iterated
+                        JSONObject newForceLaw = new JSONObject();
+                        i = 0;
+                        while (keys.hasNext()) {
+                            newForceLaw.put(keys.next(), _dataTable.getValueAt(i, 1));
+                            // we take the value of the cell (i,1) because row i is the key we are looking
+                            // for and column 1 always contains the value of that key
+                            i++;
+                        }
+                        _ctrl.setForceLaws(newForceLaw); // change the force law in the controller
+                        _modifyDataDialog.setVisible(false); // close the window (dialog) of modifyData
+                    }
+                }
+            });
+            buttonsPanel.add(okButton);
+
+            _bottomPanel.add(comboBoxPanel, BorderLayout.PAGE_START);
+            _bottomPanel.add(buttonsPanel, BorderLayout.PAGE_END);
+
+            updateDialog();
+            
+            this.setPreferredSize(new Dimension(1000, 700));
+            this.pack();
+        }
+
+        private void updateDialog() {
+            //_mainPanel.removeAll();
+
+            _mainPanel.add(_topPanel, BorderLayout.PAGE_START);
+            _mainPanel.add(_centerPanel, BorderLayout.CENTER);
+            _mainPanel.add(_bottomPanel, BorderLayout.PAGE_END);
+        }
+
+        private void optionChanged(String law) {
+            JSONObject selectedLaw = null;
+            
+            for (JSONObject forceLaw : _lawsInfo) {
+                if (forceLaw.getString("desc").equalsIgnoreCase(law)) {
+                    selectedLaw = forceLaw;
+                    break;
+                }
+            }
+
+            _centerPanel = createCenterPanel(selectedLaw);
+            updateDialog();
+        }
+
+        private JPanel createCenterPanel(JSONObject law) {
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.setPreferredSize(new Dimension(1000,200));
+
+            _dataTable = createTable(law);
+            JScrollPane tablePane = new JScrollPane(_dataTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            tablePane.setPreferredSize(new Dimension(1000,100));
+
+            panel.add(tablePane, BorderLayout.CENTER);            
+            return panel;
+        }
+
+        
+        private JTable createTable(JSONObject selectedLaw) {
+        
+            _dataTableModel = new JsonTableModel(selectedLaw);
+    
+            JTable dataTable = new JTable(_dataTableModel) {
+                private static final long serialVersionUID = 1L;
+    
+                // we override prepareRenderer to resized rows to fit to content
+                @Override
+                public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                    Component component = super.prepareRenderer(renderer, row, column);
+                    int rendererWidth = component.getPreferredSize().width;
+                    TableColumn tableColumn = getColumnModel().getColumn(column);
+                    tableColumn.setPreferredWidth(
+                            Math.max(rendererWidth + getIntercellSpacing().width, tableColumn.getPreferredWidth()));
+                    return component;
+                }
+            };
+    
+            dataTable.setMaximumSize(new Dimension(1000, 50));
+    
+            return dataTable;
+        }
     }
-
 
     ControlPanel(Controller ctrl) {
         _ctrl = ctrl;
         _stopped = true;
         initGUI();
+        _modifyDataDialog = new ModifyDataDialog();
+        _modifyDataDialog.setVisible(false);
         _ctrl.addObserver(this);
     }
 
@@ -185,16 +358,16 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         _steps = new JSpinner(new SpinnerNumberModel(150, 1, 10000, 1));
         _steps.setToolTipText("Simulation steps to execute");
         _steps.setMaximumSize(new Dimension(80, 40));
-		_steps.setMinimumSize(new Dimension(80, 40));
-		_steps.setPreferredSize(new Dimension(80, 40));
+        _steps.setMinimumSize(new Dimension(80, 40));
+        _steps.setPreferredSize(new Dimension(80, 40));
 
         // DELTA TIME
         _deltaTime = new JTextField();
         _deltaTime.setText("2500");
         _deltaTime.setToolTipText("Delta time");
         _deltaTime.setMaximumSize(new Dimension(80, 40));
-		_deltaTime.setMinimumSize(new Dimension(80, 40));
-		_deltaTime.setPreferredSize(new Dimension(80, 40));
+        _deltaTime.setMinimumSize(new Dimension(80, 40));
+        _deltaTime.setPreferredSize(new Dimension(80, 40));
 
         // ADD BODY BUTTON
         _addBtn = new JButton();
@@ -239,347 +412,45 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         toolBar.add(leftButtons, BorderLayout.WEST);
         toolBar.add(rightButtons, BorderLayout.EAST);
     }
-    
+
     // other private/protected methods
     // ...
 
     static JComponent createVerticalSeparator() {
         JSeparator x = new JSeparator(SwingConstants.VERTICAL);
-        x.setPreferredSize(new Dimension(3,40));
+        x.setPreferredSize(new Dimension(3, 40));
         return x;
     }
 
-    // IMPLEMENTATION OF THE BUTTONS FUNCTIONALITY 
+    // IMPLEMENTATION OF THE BUTTONS FUNCTIONALITY
     // LOAD FILE BUTTON
     private void loadFile() {
         JFileChooser fileChooser = new JFileChooser("resources/examples/");
-        
+
         int ret = fileChooser.showOpenDialog(this);
         if (ret == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             System.out.println("Loading: " + file.getName());
             try {
                 _ctrl.reset();
-                _ctrl.loadBodies(new FileInputStream(file));                
+                _ctrl.loadBodies(new FileInputStream(file));
             } catch (FileNotFoundException e) {
-                JOptionPane.showMessageDialog(getParent(), "Error while opening the file", "Uh-oh...", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(getParent(), "Error while opening the file", "Uh-oh...",
+                        JOptionPane.ERROR_MESSAGE);
             }
 
         } else {
             System.out.println("File load cancelled by user.");
         }
-        
+
     }
 
-
-    private void openDialog() {
-        _forceLawsDialog.setVisible(true);
-    }
-
-/*
-    // SEGUNDA IMPLEMENTACION - INICIO
+    // ////// MODIFY FORCE LAW BUTTON \\\\\\
     private void modifyData() {
-        _forceLawsDialog.removeAll();
-
-        List<JSONObject> lawsInfo = _ctrl.getForceLawsInfo();
-        String[] forces = new String[lawsInfo.size()];
-
-        for (int i = 0; i < lawsInfo.size(); i++) {
-            forces[i] = lawsInfo.get(i).getString("desc");
-        }
-
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-		_forceLawsDialog.setContentPane(mainPanel);
-
-        JLabel initialText = new JLabel("<html><p>Select a force law and provide values for the parameters in the <b>Value column</b> (default values are used for <br> parameters with no value).</p></html>");
-		initialText.setAlignmentX(CENTER_ALIGNMENT);
-
-        mainPanel.add(initialText);
-
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-
-        JPanel tablePanel = new JPanel();
-		tablePanel.setAlignmentX(CENTER_ALIGNMENT);
-		mainPanel.add(tablePanel);
-
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-
-        JPanel comboboxPanel = new JPanel();
-		comboboxPanel.setAlignmentX(CENTER_ALIGNMENT);
-		mainPanel.add(comboboxPanel);
-
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-
-        JPanel buttonsPanel = new JPanel();
-		buttonsPanel.setAlignmentX(CENTER_ALIGNMENT);
-		mainPanel.add(buttonsPanel);
-
-        // TABLE
-        JScrollPane tablePane = new JScrollPane(_dataTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        tablePane.setPreferredSize(new Dimension(10,100));
-        _dataTable = createTable(lawsInfo.get(0));
-        updateTable();
-
-        // COMBO BOX
-        DefaultComboBoxModel<String> selectorModel = new DefaultComboBoxModel<>();
-        JComboBox<String> selector = new JComboBox<String>(forces);
-        // identify when the force law is changed
-        selector.addActionListener((e) -> optionChanged(selectorModel.getSelectedItem().toString(), lawsInfo));
-        comboboxPanel.add(selector);
-
-
-        // BUTTONS
-        JButton cancelButton = new JButton("Cancel");
-		cancelButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// do nothing on the controller
-				_forceLawsDialog.setVisible(false);// close the window (dialog) of modifyData
-			}
-		});
-		buttonsPanel.add(cancelButton);
-
-        JButton okButton = new JButton("OK");
-		okButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (selectorModel.getSelectedItem() != null) {
-
-					// if we press OK, we have to change the controller:
-                    int i = 0;
-                    boolean found = false;
-                    JSONObject selectedLaw = new JSONObject();
-
-                    // know which law we have selected from the array of strings that the comboBox has:
-                    while (i < lawsInfo.size() && !found ) {
-                        if (lawsInfo.get(i).getString("desc").equalsIgnoreCase(_selector.getSelectedItem().toString())) {
-                            selectedLaw = lawsInfo.get(i);
-                            found = true;
-                        }
-                        i++;
-                    }
-
-                    Iterator<String> keys = selectedLaw.keys(); // keys of the force law to be iterated
-                    JSONObject newForceLaw = new JSONObject();
-                    i = 0;
-
-                    while (keys.hasNext()) {
-                        newForceLaw.put(keys.next(), _dataTable.getValueAt(i, 1));
-                        // we take the value of the cell (i,1) because row i is the key we are looking
-                        // for and column 1 always contains the value of that key
-                        i++;
-                    }
-
-                    _ctrl.setForceLaws(newForceLaw); // change the force law in the controller
-
-					_forceLawsDialog.setVisible(false); // close the window (dialog) of modifyData
-				}
-			}
-		});
-		buttonsPanel.add(okButton);
-
+        _modifyDataDialog.setVisible(true);
         
-        _forceLawsDialog.setPreferredSize(new Dimension(1000, 700));
-		_forceLawsDialog.pack();
-		_forceLawsDialog.setVisible(true);
-    
-    }
-    // SEGUNDA IMPLEMENTACION - FIN
-
-*/
-
-
-    //      ////// MODIFY FORCE LAW BUTTON \\\\\\
-    private void modifyData() {
-
-        _panel = new JPanel();
-        _panel.setLayout(new BorderLayout());
-
-        // 1. Open dialog box to select the physic law
-        JDialog _forceLawsDialog = new JDialog();
-        _forceLawsDialog.setTitle("Force Laws Selection");
-        _forceLawsDialog.setSize(700, 300);
-
-        List<JSONObject> lawsInfo = _ctrl.getForceLawsInfo();
-        String[] forces = new String[lawsInfo.size()];
-
-        for (int i = 0; i < lawsInfo.size(); i++) {
-            forces[i] = lawsInfo.get(i).getString("desc");
-        }
-
-        // initial text
-        JPanel textPanel = new JPanel();
-        textPanel.setLayout(new BorderLayout());
-        JLabel text = new JLabel("<html><p>Select a force law and provide values for the parameters in the <b>Value column</b> (default values are used for <br> parameters with no value).</p></html>");
-
-        textPanel.setPreferredSize(new Dimension(40,50));
-        textPanel.add(text, BorderLayout.WEST);
-		_panel.add(textPanel, BorderLayout.PAGE_START);
-
-        JPanel spacePanel = new JPanel();
-		spacePanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        _panel.add(spacePanel, BorderLayout.AFTER_LINE_ENDS);
-
-        // Table (by default we create a table including the force law with index 0)
-        // _dataTable = createTable(lawsInfo.get(0));
-        // updateTable();
-        // JScrollPane tablePane = new JScrollPane(_dataTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        // tablePane.setPreferredSize(new Dimension(10,100));
-        // JPanel tablePanel = new JPanel();
-        // tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.PAGE_AXIS));
-        // tablePanel.add(tablePane);
-        // panel.add(tablePanel, BorderLayout.CENTER);
-        
-
-        // comboBox
-        JPanel comboBoxPanel = new JPanel();
-        //DefaultComboBoxModel<ForceLaws> _selectorModel = new DefaultComboBoxModel<>();
-        _selector = new JComboBox<String>(forces);
-        // identify when the force law is changed
-        _selector.addActionListener((e) -> optionChanged(_selector.getSelectedItem().toString(), lawsInfo));
-        comboBoxPanel.add(_selector);
-
-        //panel.add(comboBoxPanel);
-
-
-        // OK and Cancel buttons
-        JPanel buttonsPanel = new JPanel();
-		buttonsPanel.setAlignmentX(CENTER_ALIGNMENT);
-
-        JButton cancelButton = new JButton("Cancel");
-		cancelButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// do nothing on the controller
-				_forceLawsDialog.setVisible(false);// close the window (dialog) of modifyData
-			}
-		});
-		buttonsPanel.add(cancelButton);
-
-        JButton okButton = new JButton("OK");
-		okButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (_selector.getSelectedItem() != null) {
-
-					// if we press OK, we have to change the controller:
-                    int i = 0;
-                    boolean found = false;
-                    JSONObject selectedLaw = new JSONObject();
-
-                    // know which law we have selected from the array of strings that the comboBox has:
-                    while (i < lawsInfo.size() && !found ) {
-                        if (lawsInfo.get(i).getString("desc").equalsIgnoreCase(_selector.getSelectedItem().toString())) {
-                            selectedLaw = lawsInfo.get(i);
-                            found = true;
-                        }
-                        i++;
-                    }
-
-                    Iterator<String> keys = selectedLaw.keys(); // keys of the force law to be iterated
-                    JSONObject newForceLaw = new JSONObject();
-                    i = 0;
-
-                    while (keys.hasNext()) {
-                        newForceLaw.put(keys.next(), _dataTable.getValueAt(i, 1));
-                        // we take the value of the cell (i,1) because row i is the key we are looking
-                        // for and column 1 always contains the value of that key
-                        i++;
-                    }
-
-                    _ctrl.setForceLaws(newForceLaw); // change the force law in the controller
-
-					_forceLawsDialog.setVisible(false); // close the window (dialog) of modifyData
-				}
-			}
-		});
-		buttonsPanel.add(okButton);
-
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new BorderLayout());
-        bottomPanel.add(comboBoxPanel, BorderLayout.PAGE_START);
-        bottomPanel.add(buttonsPanel, BorderLayout.PAGE_END);
-
-		_panel.add(bottomPanel, BorderLayout.PAGE_END);
-
-        _dataTable = createTable(lawsInfo.get(0));
-        updateTable();
-
-
-        _forceLawsDialog.add(_panel, BorderLayout.PAGE_START);
-        _forceLawsDialog.setResizable(false);
-        _forceLawsDialog.setVisible(true);
     }
 
-    /*
-    // SEGUNDA IMPLEMENTACION
-    private void updateTable() {
-        _dataTable = createTable(selectedLaw)
-
-
-        //_forceLawsDialog.add(_panel, BorderLayout.CENTER);
-    }
-    // SEGUNDA IMPLEMENTACION*/
-
-    
-    private void updateTable() {
-        JScrollPane tablePane = new JScrollPane(_dataTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        tablePane.setPreferredSize(new Dimension(10,100));
-        JPanel tablePanel = new JPanel();
-        tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.PAGE_AXIS));
-        tablePanel.add(tablePane);
-        _panel.add(tablePanel, BorderLayout.CENTER);
-
-
-        //_forceLawsDialog.add(_panel, BorderLayout.CENTER);
-    }
-
-    // Method called when there is a change in the option chosen in the
-    // JComboBox to trigger the change of table
-    private void optionChanged(String selectedLaw, List<JSONObject> lawsInfo) {
-        int i = 0;
-        boolean found = false;
-
-        while (i < lawsInfo.size() && !found ) {
-            if (lawsInfo.get(i).getString("desc").equalsIgnoreCase(selectedLaw)) {
-                _dataTable = createTable(lawsInfo.get(i)); // change the _dataTable with new data
-                found = true;
-                updateTable();
-            }
-            i++;
-        }
-    }
-
-    private JTable createTable(JSONObject selectedLaw) {
-
-        _dataTableModel = new JsonTableModel(selectedLaw);
-
-        JTable dataTable = new JTable(_dataTableModel) {
-			private static final long serialVersionUID = 1L;
-
-			// we override prepareRenderer to resized rows to fit to content
-			@Override
-			public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-				Component component = super.prepareRenderer(renderer, row, column);
-				int rendererWidth = component.getPreferredSize().width;
-				TableColumn tableColumn = getColumnModel().getColumn(column);
-				tableColumn.setPreferredWidth(
-						Math.max(rendererWidth + getIntercellSpacing().width, tableColumn.getPreferredWidth()));
-				return component;
-			}
-		};
-
-        dataTable.setMaximumSize(new Dimension(1000,50));
-
-        return dataTable;
-    }
-
-    //      ////// END OF MODIFY FORCE LAW BUTTON \\\\\\
 
     // START BUTTON
     private void start() {
@@ -589,11 +460,12 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
         try {
             // Set delta time to the one specified in the text field
-            double new_dt = Double.parseDouble(_deltaTime.getText()); // get the text from the text field and parse it to double
+            double new_dt = Double.parseDouble(_deltaTime.getText()); // get the text from the text field and parse it
+                                                                      // to double
             _ctrl.setDeltaTime(new_dt); // assign it to the controller
 
             // Call the method run_sim with the current value of steps
-            int steps = (int)_steps.getValue();
+            int steps = (int) _steps.getValue();
             run_sim(steps);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.toString(), "Exception thrown", JOptionPane.WARNING_MESSAGE);
@@ -611,25 +483,25 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     // ADD BUTTON
     private void add() {
         /*
-        TODO: Allow adding a body, in a similar way to what we do for changing
-        laws. The best is to add a method addBody(JSONObject) to the
-        Controller for this, which calls the factory to create the body and
-        then and then pass it to the simulator.
-        */
+         * TODO: Allow adding a body, in a similar way to what we do for changing laws.
+         * The best is to add a method addBody(JSONObject) to the Controller for this,
+         * which calls the factory to create the body and then and then pass it to the
+         * simulator.
+         */
     }
 
     // DELETE BUTTON
     private void delete() {
         /*
-        TODO: Allow deleting a body (open a dialog and ask the user to select a
-        body from a combox box). For this you will have to add
-        delBody(String) to PhysicsSimulator and also the Controller.
-        */
+         * TODO: Allow deleting a body (open a dialog and ask the user to select a body
+         * from a combox box). For this you will have to add delBody(String) to
+         * PhysicsSimulator and also the Controller.
+         */
         JDialog deleteDialog = new JDialog();
         deleteDialog.setTitle("Delete body");
         JPanel deletePanel = new JPanel();
         deletePanel.setLayout(new BoxLayout(deletePanel, BoxLayout.Y_AXIS));
-		deleteDialog.setContentPane(deletePanel);
+        deleteDialog.setContentPane(deletePanel);
 
         JLabel message = new JLabel("Select a body to be deleted");
         message.setAlignmentX(CENTER_ALIGNMENT);
@@ -645,8 +517,8 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         deletePanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         JPanel buttonsPanel = new JPanel();
-		buttonsPanel.setAlignmentX(CENTER_ALIGNMENT);
-		deletePanel.add(buttonsPanel);
+        buttonsPanel.setAlignmentX(CENTER_ALIGNMENT);
+        deletePanel.add(buttonsPanel);
 
         String[] bodyIds = _ctrl.getBodyIds();
         JComboBox<String> bodies = new JComboBox<>(bodyIds);
@@ -654,54 +526,50 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         comboboxPanel.add(bodies);
 
         JButton cancelButton = new JButton("Cancel");
-		cancelButton.addActionListener(new ActionListener() {
+        cancelButton.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 // do nothing
-				deleteDialog.setVisible(false);
-			}
-		});
-		buttonsPanel.add(cancelButton);
+                deleteDialog.setVisible(false);
+            }
+        });
+        buttonsPanel.add(cancelButton);
 
         JButton okButton = new JButton("OK");
-		okButton.addActionListener(new ActionListener() {
+        okButton.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (bodies.getSelectedItem() != null) {
-					// delete selected body from the simulation
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (bodies.getSelectedItem() != null) {
+                    // delete selected body from the simulation
                     _ctrl.delBody(bodies.getSelectedItem().toString());
-					deleteDialog.setVisible(false);
-				}
-			}
-		});
-		buttonsPanel.add(okButton);
-
+                    deleteDialog.setVisible(false);
+                }
+            }
+        });
+        buttonsPanel.add(okButton);
 
         deleteDialog.setPreferredSize(new Dimension(500, 200));
-		deleteDialog.pack();
-		deleteDialog.setResizable(false);
-		deleteDialog.setVisible(true);
+        deleteDialog.pack();
+        deleteDialog.setResizable(false);
+        deleteDialog.setVisible(true);
     }
 
     // EXIT BUTTON
     private void exit() {
         JFrame exit = new JFrame("Exit confirmation");
 
-        int n = JOptionPane.showOptionDialog(exit, "Would you like to exit?", "Exit confirmation", 
-            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+        int n = JOptionPane.showOptionDialog(exit, "Would you like to exit?", "Exit confirmation",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 
         if (n == JOptionPane.YES_OPTION) {
             System.exit(0);
         }
     }
 
-
-
-
     private void run_sim(int n) {
-        if ( n>0 && !_stopped ) {
+        if (n > 0 && !_stopped) {
             try {
                 _ctrl.run(1);
             } catch (Exception e) {
@@ -712,10 +580,10 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
                 enableButtonsTF(true);
                 return;
             }
-            SwingUtilities.invokeLater( new Runnable() {
+            SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    run_sim(n-1);
+                    run_sim(n - 1);
                 }
             });
         } else {
@@ -724,7 +592,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
             enableButtonsTF(true);
         }
     }
-    
+
     private void enableButtonsTF(boolean enableTF) {
         // enableTF == true => Enable all buttons
         // enableTF == false => Disable all buttons (doesn't affect the stop button)
@@ -750,21 +618,25 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     public void onReset(List<Body> bodies, double time, double dt, String fLawsDesc) {
         this._deltaTime.setText(String.valueOf(dt));
     }
-    
-    @Override
-    public void onBodyAdded(List<Body> bodies, Body b) {}
 
     @Override
-    public void onBodyDeleted(List<Body> bodies) {}
-    
+    public void onBodyAdded(List<Body> bodies, Body b) {
+    }
+
     @Override
-    public void onAdvance(List<Body> bodies, double time) {}
-    
+    public void onBodyDeleted(List<Body> bodies) {
+    }
+
+    @Override
+    public void onAdvance(List<Body> bodies, double time) {
+    }
+
     @Override
     public void onDeltaTimeChanged(double dt) {
         this._deltaTime.setText(String.valueOf(dt));
     }
-    
+
     @Override
-    public void onForceLawsChanged(String fLawsDesc) {}
+    public void onForceLawsChanged(String fLawsDesc) {
+    }
 }
