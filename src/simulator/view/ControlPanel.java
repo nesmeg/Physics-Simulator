@@ -167,7 +167,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
             //-----------------------------TOP PANEL---------------------------------\\
             _topPanel = new JPanel();
-            _topPanel.setPreferredSize(new Dimension(1000, 30));
+            _topPanel.setPreferredSize(new Dimension(1000, 50));
             _topPanel.setLayout(new BorderLayout());
         
             JLabel initialText = new JLabel("<html><p>Select a force law and provide values for the parameters in the <b>Value column</b> (default values are used for <br> parameters with no value).</p></html>");
@@ -185,7 +185,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
             
             // COMBOBOX PANEL
             JPanel comboBoxPanel = new JPanel();
-            comboBoxPanel.setPreferredSize(new Dimension(1000, 30));
+            comboBoxPanel.setPreferredSize(new Dimension(1000, 50));
             comboBoxPanel.setAlignmentX(CENTER_ALIGNMENT); 
             
             // COMBO BOX
@@ -198,7 +198,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
             // BUTTONS PANEL
             JPanel buttonsPanel = new JPanel();
-            comboBoxPanel.setPreferredSize(new Dimension(1000, 30));
+            comboBoxPanel.setPreferredSize(new Dimension(1000, 50));
 		    buttonsPanel.setAlignmentX(CENTER_ALIGNMENT);
 
              // BUTTONS
@@ -231,24 +231,10 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
                                 }
                                 i++;
                             }
+                            String data = _dataTableModel.getData();
                             JSONObject newForceLaw = new JSONObject();
-                            JSONObject newForceLawData = new JSONObject();
+                            JSONObject newForceLawData = new JSONObject(data);
                             newForceLaw.put("type", selectedLaw.getString("type"));
-
-                            i = 0;
-                            JSONObject dataKeys = selectedLaw.getJSONObject("data");
-                            Iterator<String> keys = dataKeys.keys(); // keys of the force law to be iterated
-                            while (keys.hasNext()) {
-                                newForceLawData.put(keys.next(), _dataTableModel.getValueAt(i, 1));
-                                // we take the value of the cell (i,1) because row i is the key we are looking
-                                // for and column 1 always contains the value of that key
-                                i++;
-                            }
-                            if (newForceLaw.getString("type").equals("mtfp")){
-                                JSONArray jarray = new JSONArray(newForceLawData.getString("c"));
-                                newForceLawData.remove("c");
-                                newForceLawData.put("c", jarray);
-                            }
                             newForceLaw.put("data", newForceLawData);
                             _ctrl.setForceLaws(newForceLaw); // change the force law in the controller
                             _modifyDataDialog.setVisible(false); // close the window (dialog) of modifyData
@@ -267,7 +253,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
             updateDialog();
             
-            this.setPreferredSize(new Dimension(1000, 700));
+            this.setPreferredSize(new Dimension(700, 300));
             this.pack();
         }
 
@@ -298,11 +284,11 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
         private JPanel createCenterPanel(JSONObject law) {
             JPanel panel = new JPanel(new BorderLayout());
-            panel.setPreferredSize(new Dimension(1000,200));
+            panel.setPreferredSize(new Dimension(1000,50));
 
             _dataTable = createTable(law);
             JScrollPane tablePane = new JScrollPane(_dataTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            tablePane.setPreferredSize(new Dimension(1000,100));
+            tablePane.setPreferredSize(new Dimension(1000,40));
 
             panel.add(tablePane, BorderLayout.CENTER);            
             return panel;
@@ -626,6 +612,8 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         _exitBtn.setEnabled(enableTF);
         _deltaTime.setEnabled(enableTF);
         _steps.setEnabled(enableTF);
+        _addBtn.setEnabled(enableTF);
+        _deleteBtn.setEnabled(enableTF);
         this.repaint();
     }
 
