@@ -193,11 +193,11 @@ public class Viewer extends JComponent implements SimulatorObserver {
             if (_showVectors) {
                 int vel_x = (int) (body.getVelocity().direction().getX() * 25);
                 int vel_y = (int) (body.getVelocity().direction().getY() * 25);
-                drawLineWithArrow(gr, bodyCenterX,  bodyCenterY, bodyCenterX + vel_x, bodyCenterY + vel_y, 2, 2, Color.GREEN, Color.GREEN); // GREEN ARROW -> VELOCITY
+                drawLineWithArrow(gr, bodyCenterX,  bodyCenterY, bodyCenterX + vel_x, bodyCenterY - vel_y, 2, 2, Color.GREEN, Color.GREEN); // GREEN ARROW -> VELOCITY
                 
                 int force_x = (int) (body.getForce().direction().getX() * 25);
                 int force_y = (int) (body.getForce().direction().getY() * 25);
-                drawLineWithArrow(gr, bodyCenterX, bodyCenterY, bodyCenterX + force_x, bodyCenterY + force_y, 2, 2, Color.RED, Color.RED); // RED ARROW -> FORCE
+                drawLineWithArrow(gr, bodyCenterX, bodyCenterY, bodyCenterX + force_x, bodyCenterY - force_y, 2, 2, Color.RED, Color.RED); // RED ARROW -> FORCE
             }
         }
         
