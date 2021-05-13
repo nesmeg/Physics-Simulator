@@ -217,40 +217,46 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
             okButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (selector.getSelectedItem() != null) {
-                        // if we press OK, we have to change the controller:
-                        int i = 0;
-                        boolean found = false;
-                        JSONObject selectedLaw = new JSONObject();
-                        // know which law we have selected from the array of strings that the comboBox has:
-                        while (i < _lawsInfo.size() && !found ) {
-                            if (_lawsInfo.get(i).getString("desc").equalsIgnoreCase(selector.getSelectedItem().toString())) {
-                                selectedLaw = _lawsInfo.get(i);
-                                found = true;
+                    try {
+                        if (selector.getSelectedItem() != null) {
+                            // if we press OK, we have to change the controller:
+                            int i = 0;
+                            boolean found = false;
+                            JSONObject selectedLaw = new JSONObject();
+                            // know which law we have selected from the array of strings that the comboBox has:
+                            while (i < _lawsInfo.size() && !found ) {
+                                if (_lawsInfo.get(i).getString("desc").equalsIgnoreCase(selector.getSelectedItem().toString())) {
+                                    selectedLaw = _lawsInfo.get(i);
+                                    found = true;
+                                }
+                                i++;
                             }
-                            i++;
-                        }
-                        JSONObject newForceLaw = new JSONObject();
-                        JSONObject newForceLawData = new JSONObject();
-                        newForceLaw.put("type", selectedLaw.getString("type"));
+                            JSONObject newForceLaw = new JSONObject();
+                            JSONObject newForceLawData = new JSONObject();
+                            newForceLaw.put("type", selectedLaw.getString("type"));
 
-                        i = 0;
-                        JSONObject dataKeys = selectedLaw.getJSONObject("data");
-                        Iterator<String> keys = dataKeys.keys(); // keys of the force law to be iterated
-                        while (keys.hasNext()) {
-                            newForceLawData.put(keys.next(), _dataTableModel.getValueAt(i, 1));
-                            // we take the value of the cell (i,1) because row i is the key we are looking
-                            // for and column 1 always contains the value of that key
-                            i++;
+                            i = 0;
+                            JSONObject dataKeys = selectedLaw.getJSONObject("data");
+                            Iterator<String> keys = dataKeys.keys(); // keys of the force law to be iterated
+                            while (keys.hasNext()) {
+                                newForceLawData.put(keys.next(), _dataTableModel.getValueAt(i, 1));
+                                // we take the value of the cell (i,1) because row i is the key we are looking
+                                // for and column 1 always contains the value of that key
+                                i++;
+                            }
+                            if (newForceLaw.getString("type").equals("mtfp")){
+                                JSONArray jarray = new JSONArray(newForceLawData.getString("c"));
+                                newForceLawData.remove("c");
+                                newForceLawData.put("c", jarray);
+                            }
+                            newForceLaw.put("data", newForceLawData);
+                            _ctrl.setForceLaws(newForceLaw); // change the force law in the controller
+                            _modifyDataDialog.setVisible(false); // close the window (dialog) of modifyData
+                        
+                            
                         }
-                        if (newForceLaw.getString("type").equals("mtfp")){
-                            JSONArray jarray = new JSONArray(newForceLawData.getString("c"));
-                            newForceLawData.remove("c");
-                            newForceLawData.put("c", jarray);
-                        }
-                        newForceLaw.put("data", newForceLawData);
-                        _ctrl.setForceLaws(newForceLaw); // change the force law in the controller
-                        _modifyDataDialog.setVisible(false); // close the window (dialog) of modifyData
+                    } catch (Exception exc) {
+                        JOptionPane.showMessageDialog(_modifyDataDialog, "Change of force laws did not succeed");
                     }
                 }
             });
