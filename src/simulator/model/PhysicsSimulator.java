@@ -146,4 +146,16 @@ public class PhysicsSimulator {
             }
         }
     }
+
+    public void onStart(){
+        for (SimulatorObserver observer : _observers) {
+            observer.onStart();
+        }
+    }
+
+    public void onStop(){
+        for (SimulatorObserver observer :_observers) {
+            observer.onStop();
+        }
+    }
 }

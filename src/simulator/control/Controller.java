@@ -120,4 +120,12 @@ public class Controller {
     public void delBody(String bodyId) {
         _sim.delBody(bodyId);
     }
+
+    public void onStart(){
+        _sim.onStart();
+    }
+
+    public void onStop(){
+        _sim.onStop();
+    }
 }

@@ -334,6 +334,8 @@ public class Main {
 	}
 
 	private static void startGUIMode() throws FileNotFoundException, InvocationTargetException, InterruptedException {
+		
+		// TO REMOVE THE CHANGE THEME FUNCTIONALITY, COMMENT THE FOLLOWING CODE UNTIL *******************************
 		ColorTheme colorTheme = new ColorTheme();
 		if (colorTheme.getTheme() == 1) { // dark theme
 			UIManager.put( "control", new Color( 100, 100, 100) );
@@ -370,7 +372,7 @@ public class Main {
 			}
 		}
 		// else, light theme by default
-
+		// ****************************** END OF COMMENT TO REMOVE THEME FUNCITONALITY ****************************** 
 
 		// Create a simulator
 		ForceLaws forceLaws = _forceLawsFactory.createInstance(_forceLawsInfo);

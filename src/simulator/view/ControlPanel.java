@@ -465,6 +465,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         // Disable all buttons except the stop one and set the value of stopped to false
         enableButtonsTF(false);
         _stopped = false;
+        _ctrl.onStart();
         
         try {
             // Set delta time to the one specified in the text field
@@ -486,6 +487,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         _stopped = true;
         // Enable the buttons back
         enableButtonsTF(true);
+        _ctrl.onStop();
     }
 
     // ADD BUTTON
@@ -580,6 +582,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
                 JOptionPane.showMessageDialog(this, "Simulation error.", "Uh-oh...", JOptionPane.WARNING_MESSAGE);
                 // enable all buttons
                 _stopped = true;
+                _ctrl.onStop();
                 enableButtonsTF(true);
                 return;
             }
@@ -591,6 +594,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
             });
         } else {
             _stopped = true;
+            _ctrl.onStop();
             // enable all buttons
             enableButtonsTF(true);
         }

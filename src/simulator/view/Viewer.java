@@ -105,7 +105,7 @@ public class Viewer extends JComponent implements SimulatorObserver {
             @Override
             public void mouseClicked(MouseEvent arg0) {
                 // CHANGE COLOR OF THE BODY
-                if (arg0.getClickCount() > 0 && _isRunning) {
+                if (arg0.getClickCount() > 0 && !_isRunning) {
                     Body b = getSelectedBody(arg0.getX(), arg0.getY());
                     if (b != null) {
                         Color c = _chooser.showDialog(null, "Select the color for the body", Color.BLUE);
@@ -139,7 +139,7 @@ public class Viewer extends JComponent implements SimulatorObserver {
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (_selectedBody != null && _isRunning) {
+                if (_selectedBody != null && !_isRunning) {
                     int x = e.getX();
                     int y = e.getY();
                     double newX;
