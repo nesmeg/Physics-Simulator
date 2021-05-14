@@ -18,13 +18,17 @@ Samir's comments on first assignment to be fixed:
 EXTRA FUNCTIONALITY:
     1. Allow changing the position of a body by dragging it when the
     simulation is not running.
-        > DONE (missing disabling when sim is running)
+        > DONE
 
     2. Allow changing the color of a body.
-        > DONE (missing disabling when sim is running)
+        > DONE
 
     3. Allow adding a body, in a similar way to what we do for changing laws.
+        > DONE
 
     4. Allow deleting a body (open a dialog and ask the user to select a
     body from a combox box).
+        > DONE
+
+    5. Allow changing the theme of the GUI
         > DONE

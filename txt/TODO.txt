@@ -23,7 +23,7 @@ LO QUE QUEDA
 [X] Arreglar el movimiento de los bodies (simetria y que se muevan al mismo punto)
 [X] Como desactivar las opciones de mover y cambiar de color los bodies cuando se estan moviendo
         Nuestra idea: crear otro observer que sea onStopped y que viewer sepa cuando esta parado y cuando moviendose
-[ ] AddBody button
+[X] AddBody button
 
 
 Once all of the above are done...
@@ -31,3 +31,4 @@ Once all of the above are done...
 [ ] Para entregarlo a Samir, borrar:
         - Carpeta src/extra
         - txt/TODO.txt y txt/comments.0.txt
+        - resources/output carpeta entera
