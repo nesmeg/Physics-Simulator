@@ -107,6 +107,10 @@ public class Controller {
         return _forceLawsFactory.getInfo();
     }
 
+    public List<JSONObject> getBodiesInfo() {
+        return _bodiesFactory.getInfo();
+    }
+
     public void setForceLaws(JSONObject info) {
         ForceLaws forceLaws;
         forceLaws = _forceLawsFactory.createInstance(info);
@@ -127,5 +131,9 @@ public class Controller {
 
     public void onStop(){
         _sim.onStop();
+    }
+
+    public void addBody(JSONObject body) {
+        _sim.addBody(_bodiesFactory.createInstance(body));
     }
 }

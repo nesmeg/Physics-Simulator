@@ -5,24 +5,25 @@ Mark with an X the tasks already done
 [X] Revise Controller.java line 91
 [X] Changes in main
 [X] Handle exception of the control panel (just before 6.2)
-[ ] Finish the modifyData button of the control panel
+[X] Finish the modifyData button of the control panel
 [X] Finish BodiesTable and BodiesTableModel
 
 ERRORES
 [X] Set size of all windows
 [X] Place the buttons
-[ ] Fix modifyData button
+[X] Fix modifyData button
 [X] Fix the bouncing of statusBar (with separators)
 [X] Disable all buttons when running
 [X] Print Bodies
 [X] Border Layout East West cambiar
 
 LO QUE QUEDA
-[ ] Arreglar modifyData
+[X] Arreglar modifyData
 [X] Por que el boton the borrar bodies da problemas en los bodies de los extremos? (en el primero y el ultimo)
 [X] Arreglar el movimiento de los bodies (simetria y que se muevan al mismo punto)
-[ ] Como desactivar las opciones de mover y cambiar de color los bodies cuando se estan moviendo
+[X] Como desactivar las opciones de mover y cambiar de color los bodies cuando se estan moviendo
         Nuestra idea: crear otro observer que sea onStopped y que viewer sepa cuando esta parado y cuando moviendose
+[ ] AddBody button
 
 
 Once all of the above are done...
