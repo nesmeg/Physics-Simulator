@@ -29,10 +29,10 @@ public class BasicBodyBuilder extends Builder<Body>{
   protected JSONObject createData() {
 		JSONObject data = new JSONObject();
     data.put("id", "body id");
-    data.put("vel", "body velocity");
-    data.put("force", "body force");
-    data.put("pos", "body position");
-    data.put("mass", "body mass");
+    data.put("v", "body velocity");
+    data.put("f", "body force");
+    data.put("p", "body position");
+    data.put("m", "body mass");
 		return data;
 	}
 }
