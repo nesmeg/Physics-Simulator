@@ -27,12 +27,13 @@ import simulator.model.ForceLaws;
 public class ControlPanel extends JPanel implements SimulatorObserver {
     // ...
     private Controller _ctrl;
-    private boolean _stopped;
     private JButton _loadFileBtn;
     private JButton _modifyBtn;
     private JButton _startBtn;
     private JButton _stopBtn;
     private JButton _exitBtn;
+    private JSpinner _delay;
+    private volatile Thread _thread;
     private JSpinner _steps;
     private JTextField _deltaTime;
     private JButton _addBtn;
@@ -596,7 +597,6 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
     ControlPanel(Controller ctrl) {
         _ctrl = ctrl;
-        _stopped = true;
         initGUI();
         _modifyDataDialog = new ModifyDataDialog();
         _modifyDataDialog.setVisible(false);
@@ -640,6 +640,13 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         _stopBtn.setEnabled(false);
         _stopBtn.addActionListener((e) -> stop());
 
+        // DELAY
+        _delay = new JSpinner(new SpinnerNumberModel(1, 0, 1000, 1));
+        _delay.setToolTipText("Simulation delay");
+        _delay.setMaximumSize(new Dimension(80, 40));
+        _delay.setMinimumSize(new Dimension(80, 40));
+        _delay.setPreferredSize(new Dimension(80, 40));
+
         // STEPS
         _steps = new JSpinner(new SpinnerNumberModel(150, 1, 10000, 1));
         _steps.setToolTipText("Simulation steps to execute");
@@ -681,6 +688,8 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         leftButtons.add(createVerticalSeparator());
         leftButtons.add(_startBtn);
         leftButtons.add(_stopBtn);
+        leftButtons.add(new JLabel("Delay:"));
+        leftButtons.add(_delay);
         leftButtons.add(new JLabel("Steps:"));
         leftButtons.add(_steps);
         leftButtons.add(new JLabel("Delta-time:"));
@@ -742,30 +751,39 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     private void start() {
         // Disable all buttons except the stop one and set the value of stopped to false
         enableButtonsTF(false);
-        _stopped = false;
         _ctrl.onStart();
-        
-        try {
-            // Set delta time to the one specified in the text field
-            double new_dt = Double.parseDouble(_deltaTime.getText()); // get the text from the text field and parse it
-                                                                      // to double
-            _ctrl.setDeltaTime(new_dt); // assign it to the controller
 
-            // Call the method run_sim with the current value of steps
-            int steps = (int) _steps.getValue();
-            run_sim(steps);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, e.toString(), "Exception thrown", JOptionPane.WARNING_MESSAGE);
-        }
+        // Set delta time to the one specified in the text field
+        double new_dt = Double.parseDouble(_deltaTime.getText()); // get the text from the text field and parse it to double
+        _ctrl.setDeltaTime(new_dt); // assign it to the controller
+
+        int steps = (int) _steps.getValue();
+
+        int delay = (int) _delay.getValue();
+        long delayLong = (long) delay;
+
+        _thread = new Thread() {
+            public void run() {
+                try {
+                    run_sim(steps, delay);
+                    enableButtonsTF(true);
+                    _thread = null;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        _thread.start();
     }
 
     // STOP BUTTON
     private void stop() {
-        // Stop the execution
-        _stopped = true;
         // Enable the buttons back
         enableButtonsTF(true);
         _ctrl.onStop();
+        if (_thread != null) {
+            _thread.interrupt();
+        }
     }
 
     // ADD BUTTON
@@ -846,27 +864,31 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         }
     }
 
-    private void run_sim(int n) {
-        if (n > 0 && !_stopped) {
+    private void run_sim(int n, long delay) {
+        if (n > 0 && !Thread.interrupted()) {
             try {
                 _ctrl.run(1);
             } catch (Exception e) {
                 // show the error in a dialog box
                 JOptionPane.showMessageDialog(this, "Simulation error.", "Uh-oh...", JOptionPane.WARNING_MESSAGE);
                 // enable all buttons
-                _stopped = true;
                 _ctrl.onStop();
                 enableButtonsTF(true);
                 return;
             }
+            try {
+                Thread.sleep(delay);                
+            } catch (InterruptedException e){
+                return;
+            }
+
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    run_sim(n - 1);
+                    run_sim(n - 1, delay);
                 }
             });
         } else {
-            _stopped = true;
             _ctrl.onStop();
             // enable all buttons
             enableButtonsTF(true);
