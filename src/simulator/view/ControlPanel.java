@@ -29,6 +29,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     private Controller _ctrl;
     private boolean _stopped;
     private JButton _loadFileBtn;
+    private JFileChooser _fileChooser;
     private JButton _modifyBtn;
     private JButton _startBtn;
     private JButton _stopBtn;
@@ -39,7 +40,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     private JButton _deleteBtn;
     private JDialog _modifyDataDialog;
     private JDialog _addBodyDialog;
-
+    private JDialog _deleteBodyDialog;
 
     private class ModifyDataDialog extends JDialog {
         private JsonTableModel _dataTableModel;
@@ -252,6 +253,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
             updateDialog();
             
             this.setPreferredSize(new Dimension(700, 300));
+            this.setTitle("Force Laws selection");
             this.pack();
         }
 
@@ -528,6 +530,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
             updateDialog();
 
             this.setPreferredSize(new Dimension(700, 300));
+            this.setTitle("Add Body");
             this.pack();
         }
 
@@ -594,18 +597,73 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         }
     }
 
+    private class DeleteBodyDialog extends JDialog {
+
+        DeleteBodyDialog() {
+            initDialog();
+        }
+
+        private void initDialog(){
+            JPanel deletePanel = new JPanel();
+
+            deletePanel.setLayout(new BoxLayout(deletePanel, BoxLayout.Y_AXIS));
+            this.setContentPane(deletePanel);
+
+            JLabel message = new JLabel("Select a body to be deleted");
+            message.setAlignmentX(CENTER_ALIGNMENT);
+
+            deletePanel.add(message);
+
+            deletePanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+            JPanel comboboxPanel = new JPanel();
+            comboboxPanel.setAlignmentX(CENTER_ALIGNMENT);
+            deletePanel.add(comboboxPanel);
+
+            deletePanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+            JPanel buttonsPanel = new JPanel();
+            buttonsPanel.setAlignmentX(CENTER_ALIGNMENT);
+            deletePanel.add(buttonsPanel);
+
+            String[] bodyIds = _ctrl.getBodyIds();
+            JComboBox<String> bodies = new JComboBox<>(bodyIds);
+
+            comboboxPanel.add(bodies);
+
+            JButton cancelButton = new JButton("Cancel");
+            cancelButton.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    // do nothing
+                    _deleteBodyDialog.setVisible(false);
+                }
+            });
+            buttonsPanel.add(cancelButton);
+
+            JButton okButton = new JButton("OK");
+            okButton.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    if (bodies.getSelectedItem() != null) {
+                        // delete selected body from the simulation
+                        _ctrl.delBody(bodies.getSelectedItem().toString());
+                        _deleteBodyDialog.setVisible(false);
+                    }
+                }
+            });
+            buttonsPanel.add(okButton);
+
+            this.setPreferredSize(new Dimension(500, 200));
+            this.setTitle("Delete Body");
+            this.pack();
+        }
+    }
+
     ControlPanel(Controller ctrl) {
         _ctrl = ctrl;
         _stopped = true;
         initGUI();
-        _modifyDataDialog = new ModifyDataDialog();
-        _modifyDataDialog.setVisible(false);
-        _modifyDataDialog.setAlwaysOnTop(true);
-        _modifyDataDialog.setResizable(false);
-        _addBodyDialog = new AddBodyDialog();
-        _addBodyDialog.setVisible(false);
-        _addBodyDialog.setAlwaysOnTop(true);
-        _addBodyDialog.setResizable(false);
         _ctrl.addObserver(this);
     }
 
@@ -697,6 +755,27 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         toolBar.setLayout(layout);
         toolBar.add(leftButtons, BorderLayout.WEST);
         toolBar.add(rightButtons, BorderLayout.EAST);
+
+
+        //Dialogs creation
+        _fileChooser = new JFileChooser("resources/examples/");
+        _fileChooser.setVisible(false);
+        
+        _modifyDataDialog = new ModifyDataDialog();
+        _modifyDataDialog.setVisible(false);
+        _modifyDataDialog.setAlwaysOnTop(true);
+        _modifyDataDialog.setResizable(false);
+        
+        _addBodyDialog = new AddBodyDialog();
+        _addBodyDialog.setVisible(false);
+        _addBodyDialog.setAlwaysOnTop(true);
+        _addBodyDialog.setResizable(false);
+
+        _deleteBodyDialog = new DeleteBodyDialog();
+        _deleteBodyDialog.setTitle("Delete body");
+        _deleteBodyDialog.setVisible(false);
+        _deleteBodyDialog.setAlwaysOnTop(true);
+        _deleteBodyDialog.setResizable(false);
     }
 
     // other private/protected methods
@@ -711,11 +790,11 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     // IMPLEMENTATION OF THE BUTTONS FUNCTIONALITY
     // LOAD FILE BUTTON
     private void loadFile() {
-        JFileChooser fileChooser = new JFileChooser("resources/examples/");
+        _fileChooser.setVisible(true);
 
-        int ret = fileChooser.showOpenDialog(this);
+        int ret = _fileChooser.showOpenDialog(this);
         if (ret == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
+            File file = _fileChooser.getSelectedFile();
             System.out.println("Loading: " + file.getName());
             try {
                 _ctrl.reset();
@@ -728,7 +807,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         } else {
             System.out.println("File load cancelled by user.");
         }
-
+        _fileChooser.setVisible(false);
     }
 
     // ////// MODIFY FORCE LAW BUTTON \\\\\\
@@ -736,7 +815,6 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
         _modifyDataDialog.setVisible(true);
         
     }
-
 
     // START BUTTON
     private void start() {
@@ -775,63 +853,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
 
     // DELETE BUTTON
     private void delete() {
-        JDialog deleteDialog = new JDialog();
-        deleteDialog.setTitle("Delete body");
-        JPanel deletePanel = new JPanel();
-        deletePanel.setLayout(new BoxLayout(deletePanel, BoxLayout.Y_AXIS));
-        deleteDialog.setContentPane(deletePanel);
-
-        JLabel message = new JLabel("Select a body to be deleted");
-        message.setAlignmentX(CENTER_ALIGNMENT);
-
-        deletePanel.add(message);
-
-        deletePanel.add(Box.createRigidArea(new Dimension(0, 20)));
-
-        JPanel comboboxPanel = new JPanel();
-        comboboxPanel.setAlignmentX(CENTER_ALIGNMENT);
-        deletePanel.add(comboboxPanel);
-
-        deletePanel.add(Box.createRigidArea(new Dimension(0, 20)));
-
-        JPanel buttonsPanel = new JPanel();
-        buttonsPanel.setAlignmentX(CENTER_ALIGNMENT);
-        deletePanel.add(buttonsPanel);
-
-        String[] bodyIds = _ctrl.getBodyIds();
-        JComboBox<String> bodies = new JComboBox<>(bodyIds);
-
-        comboboxPanel.add(bodies);
-
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // do nothing
-                deleteDialog.setVisible(false);
-            }
-        });
-        buttonsPanel.add(cancelButton);
-
-        JButton okButton = new JButton("OK");
-        okButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (bodies.getSelectedItem() != null) {
-                    // delete selected body from the simulation
-                    _ctrl.delBody(bodies.getSelectedItem().toString());
-                    deleteDialog.setVisible(false);
-                }
-            }
-        });
-        buttonsPanel.add(okButton);
-
-        deleteDialog.setPreferredSize(new Dimension(500, 200));
-        deleteDialog.pack();
-        deleteDialog.setResizable(false);
-        deleteDialog.setVisible(true);
+        _deleteBodyDialog.setVisible(true);
     }
 
     // EXIT BUTTON
@@ -902,16 +924,13 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     }
 
     @Override
-    public void onBodyAdded(List<Body> bodies, Body b) {
-    }
+    public void onBodyAdded(List<Body> bodies, Body b) {}
 
     @Override
-    public void onBodyDeleted(List<Body> bodies) {
-    }
+    public void onBodyDeleted(List<Body> bodies) {}
 
     @Override
-    public void onAdvance(List<Body> bodies, double time) {
-    }
+    public void onAdvance(List<Body> bodies, double time) {}
 
     @Override
     public void onDeltaTimeChanged(double dt) {
@@ -919,8 +938,7 @@ public class ControlPanel extends JPanel implements SimulatorObserver {
     }
 
     @Override
-    public void onForceLawsChanged(String fLawsDesc) {
-    }
+    public void onForceLawsChanged(String fLawsDesc) {}
 
     @Override
     public void onStart() {}
