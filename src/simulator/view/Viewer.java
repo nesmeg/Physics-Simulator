@@ -209,7 +209,7 @@ public class Viewer extends JComponent implements SimulatorObserver {
     // other private/protected methods
     // ...
 
-    private void autoScale() {
+    public void autoScale() {
         double max = 1.0;
 
         for (Body b : _bodies) {

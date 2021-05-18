@@ -24,6 +24,7 @@ public class MainWindow extends JFrame {
 
         this.setSize(1200, 700);
         this.setVisible(true);
+        _viewer.autoScale();
     }
 
     private void initGUI() {
@@ -50,7 +51,6 @@ public class MainWindow extends JFrame {
         centerPanel.add(_viewer);
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
-        
     }
 
     // other private/protected methods

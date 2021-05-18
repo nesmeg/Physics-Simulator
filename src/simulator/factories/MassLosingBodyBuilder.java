@@ -33,7 +33,6 @@ public class MassLosingBodyBuilder extends Builder<Body> {
 		JSONObject data = new JSONObject();
     data.put("id", "body id");
     data.put("v", "body velocity");
-    data.put("f", "body force");
     data.put("p", "body position");
     data.put("m", "body mass");
     data.put("factor", "mass loss factor");
